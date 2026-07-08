@@ -68,7 +68,31 @@
   /* ---------------- search ---------------- */
 
   function normalize(q) {
-    return q.toLowerCase().replace(/[^a-z0-9&\s.]/g, "").trim();
+    return q.toLowerCase().replace(/[^a-z0-9&\s.]/g, "").trim()
+      .replace(/\.(to|v|ne|cn|l|de|pa|as|mi|sw|f|ln)$/i, ""); // exchange suffixes: VFV.TO, CSPX.L …
+  }
+
+  /* region helpers */
+  function regionMeta(f) {
+    if (f.region === "CA") return { flag: "🇨🇦", label: "TSX-listed (Canada)" };
+    if (f.region === "EU") return { flag: "🇪🇺", label: "UCITS (Europe)" };
+    return { flag: "🇺🇸", label: "US-listed" };
+  }
+
+  /* The Bureau's one recommended musk-free substitute for a musky fund.
+     Prefers the fund's own curated alts; falls back to a same-region
+     broad clean fund so EVERY musky ticker gets a recommendation. */
+  function bestAlt(f) {
+    var pick = null;
+    (f.alts || []).some(function (a) {
+      var af = byTicker[a];
+      if (af && !af.special && exposure(af) <= 0.2) { pick = { f: af, fallback: false }; return true; }
+      return false;
+    });
+    if (pick) return pick;
+    var fb = f.region === "CA" ? "XIU" : f.region === "EU" ? "MEUD" : (/nasdaq|growth|tech|innovation|robotics|internet/i.test(f.cat || "") ? "VGT" : "DIA");
+    if (byTicker[fb] && fb !== f.t) return { f: byTicker[fb], fallback: true };
+    return null;
   }
 
   function search(q) {
@@ -158,6 +182,8 @@
       '<div class="hero-stamp"><div class="stamp stamp-green stamp-md"><span>MUSK-FREE<small>SPECIMEN STAMP</small></span></div></div>' +
       "</div></div></section>" +
 
+      bigBoardHTML() +
+
       '<section class="section"><div class="wrap">' +
       '<p class="kicker">Recent inspections</p>' +
       '<h2 class="h-display" style="font-size:clamp(28px,4vw,44px);margin-bottom:26px;">The funds everyone asks about</h2>' +
@@ -235,6 +261,7 @@
       "<p><b>What we count.</b> Direct equity exposure to Musk-led companies: Tesla (TSLA) weight in the fund, plus SpaceX (NASDAQ: SPCX) weight — which since the February 2026 merger includes xAI, X (formerly Twitter), and Grok — plus any disclosed stakes in the still-private Neuralink or The Boring Company. Figures are percentages of fund assets from the most recent public disclosures and index data as of " + esc(ASOF) + ", rounded sensibly.</p>" +
       "<p><b>What we don’t count.</b> Supply-chain exposure (NVIDIA selling GPUs to Musk companies), index derivatives, securities lending, or the CEO’s presence in your social feed. If we counted vibes, nothing would be Musk-free.</p>" +
       "<p><b>Two data layers.</b> (1) A <b>verified registry</b> of " + FUNDS.length + " funds and stocks, hand-checked against issuer disclosures and index announcements — that’s what the stamp is based on. (2) A <b>live layer</b>: your browser queries a public market-data API for real-time quotes, assets, expense ratios, and each ETF’s current top-25 holdings, then scans those holdings for Tesla and SpaceX by ticker <i>and</i> by name (pre-IPO stakes hide under names like “SPV Exposure to SpaceX LP”). When the live scan disagrees with the registry, the live number wins and the stamp is re-issued on the spot, marked LIVE-ADJUSTED. Tickers we’ve never heard of get a fully live provisional certificate.</p>" +
+      "<p><b>Coverage.</b> The registry spans US-listed funds and stocks, TSX-listed Canadian funds 🇨🇦, and the major European UCITS funds 🇪🇺. Foreign listings that track a US index inherit the daily-verified weights of their US twin (marked “mirrors …”) — an S&amp;P 500 tracker is the S&amp;P 500 in any currency. Any other US-listed ticker still works via live lookup; Canadian and European tickers outside the registry aren’t covered yet.</p>" +
       "<p><b>Limits, stated plainly.</b> The live holdings feed shows the top ~25 positions (typically 40–90% of a fund’s assets), so a sub-1% Musk position can hide below the cutoff — live scans are a floor, not a ceiling. Mutual funds don’t expose machine-readable holdings in real time at all. And SPCX is still being added to index families on their own schedules (see the Inclusion Tracker above) — funds marked “on SPCX-watch” can change any week. The issuer’s own holdings page remains the final word: search “[ticker] full holdings.”</p>" +
       '<p class="serif">This site is satire wearing a green eyeshade — but the data is real, and so is the use case. Invest according to your own values and math.</p>' +
       "</div>"
@@ -265,7 +292,24 @@
     var per10k = Math.round(x * 100); // x% of $10,000
     var certNo = "MF-2026-" + f.t.replace(/[^A-Z0-9]/g, "");
 
-    var metaBits = [f.type, f.cat].map(esc).join(" · ");
+    var rm = regionMeta(f);
+    var metaBits = [f.type, f.cat].map(esc).join(" · ") + " · " + rm.flag + " " + esc(rm.label);
+
+    /* Bureau Recommendation — every musky fund gets one clean substitute */
+    var recHTML = "";
+    if (!f.special && x > 0.15) {
+      var rec = bestAlt(f);
+      if (rec) {
+        var recX = exposure(rec.f);
+        recHTML = '<div class="bureau-rec"><div class="bureau-rec-head">☛ BUREAU RECOMMENDATION</div>' +
+          '<p>Choose <a href="#/f/' + esc(rec.f.t) + '"><b>' + esc(rec.f.t) + "</b></a> over " + esc(f.t) + " — " +
+          esc(rec.f.n) + ", " + (recX === 0 ? "certified 0.0% Musk" : "just " + fmtPct(recX) + " Musk") + "." +
+          (rec.fallback
+            ? " <span class=\"bureau-rec-fine\">(No like-for-like substitute exists for this one — this is the nearest clean, broad " + (f.region === "CA" ? "Canadian" : f.region === "EU" ? "European" : "US") + " lane, not an equivalent exposure.)</span>"
+            : " <span class=\"bureau-rec-fine\">(Same broad lane — " + esc(rec.f.cat) + " — but not an identical exposure; see the plan's fine print.)</span>") +
+          "</p></div>";
+      }
+    }
 
     /* dollar line */
     var dollarLine = "";
@@ -376,11 +420,14 @@
       (f.dailyVerified
         ? '<span class="dv-chip">' + (f.dailyVerified.src === "nport"
           ? "✓ verified via SEC N-PORT filing · holdings as of " + esc(f.dailyVerified.asof || "last quarter")
-          : "✓ verified by daily scan · " + esc(f.dailyVerified.date)) + "</span>"
+          : f.dailyVerified.src === "mirror"
+            ? "✓ mirrors " + esc(f.dailyVerified.via) + " — same index, verified daily"
+            : "✓ verified by daily scan · " + esc(f.dailyVerified.date)) + "</span>"
         : "") +
       "</p>" +
       '<div class="cert-stampzone">' + stampHTML(f, "lg") + "</div>" +
       dollarLine +
+      recHTML +
       noteHTML +
       holdbars +
       '<div class="cert-actions">' +
@@ -769,6 +816,7 @@
 
   function enhanceFundLive(f) {
     if (typeof LIVE === "undefined" || !window.fetch) return;
+    if (f.region) return; // TSX/UCITS listings: no US market-data API; mirror + registry cover them
     LIVE.enrich(f).then(function (data) {
       if (data) renderLivePanel(f, data);
     });
@@ -841,6 +889,68 @@
       });
       if (html) el.innerHTML = html;
     });
+  }
+
+  /* ------------- The Big Board (largest Musk-holding funds) ------------- */
+
+  function fundAumB(f) {
+    var s = f.dailyVerified && f.dailyVerified.aum;
+    if (s) {
+      var m = String(s).match(/([\d.]+)\s*([TBM])/i);
+      if (m) return parseFloat(m[1]) * (m[2].toUpperCase() === "T" ? 1000 : m[2].toUpperCase() === "M" ? 0.001 : 1);
+    }
+    return f.aumB || 0;
+  }
+  function fmtAumB(v) {
+    return v >= 1000 ? "$" + (v / 1000).toFixed(2).replace(/\.?0+$/, "") + "T" : v >= 10 ? "$" + Math.round(v) + "B" : "$" + v.toFixed(1) + "B";
+  }
+
+  function bigBoardHTML() {
+    return (
+      '<section class="section"><div class="wrap">' +
+      '<p class="kicker">Exhibit AA — The Big Board</p>' +
+      '<h2 class="h-display" style="font-size:clamp(28px,4vw,44px);margin-bottom:10px;">The largest funds holding Musk companies</h2>' +
+      '<p class="hero-sub" style="margin-top:8px;max-width:64ch;">Ranked by assets. Every one comes with the Bureau’s recommended clean substitute. Assets approximate; exposure verified where chips say so.</p>' +
+      '<div class="bb-filters" role="tablist">' +
+      [["ALL", "🌍 All"], ["US", "🇺🇸 United States"], ["CA", "🇨🇦 Canada"], ["EU", "🇪🇺 Europe"]].map(function (r, i) {
+        return '<button class="chip bb-chip' + (i === 0 ? " active" : "") + '" data-bb-region="' + r[0] + '">' + r[1] + "</button>";
+      }).join("") +
+      "</div>" +
+      '<div style="overflow-x:auto;margin-top:18px;"><table class="tbl"><thead><tr><th>#</th><th>Fund</th><th>Assets</th><th>Musk %</th><th>Choose instead</th></tr></thead><tbody id="bb-body"></tbody></table></div>' +
+      "</div></section>"
+    );
+  }
+
+  function fillBigBoard(region) {
+    var body = document.getElementById("bb-body");
+    if (!body) return;
+    var rows = FUNDS.filter(function (f) {
+      if (f.special || exposure(f) <= 0.25) return false;
+      if (region !== "ALL" && (f.region || "US") !== region) return false;
+      return fundAumB(f) > 0;
+    }).sort(function (a, b) { return fundAumB(b) - fundAumB(a); }).slice(0, 10);
+
+    body.innerHTML = rows.map(function (f, i) {
+      var rec = bestAlt(f);
+      var rm = regionMeta(f);
+      return "<tr><td class='num'>" + (i + 1) + "</td>" +
+        "<td>" + rm.flag + " <a href='#/f/" + esc(f.t) + "'>" + esc(f.t) + "</a><div class='tr-funds'>" + esc(f.n) + "</div></td>" +
+        "<td class='num'>" + fmtAumB(fundAumB(f)) + "</td>" +
+        "<td class='num' style='color:var(--red)'>" + fmtPct(exposure(f)) + "</td>" +
+        "<td>" + (rec ? "<a href='#/f/" + esc(rec.f.t) + "'>" + esc(rec.f.t) + "</a> <span class='tr-funds' style='display:inline'>" + fmtPct(exposure(rec.f)) + " Musk" + (rec.fallback ? " · nearest clean lane" : "") + "</span>" : "—") + "</td></tr>";
+    }).join("") || '<tr><td colspan="5">No qualifying funds in this region’s registry yet.</td></tr>';
+  }
+
+  function wireBigBoard(scope) {
+    var wrap = scope.querySelector(".bb-filters");
+    if (!wrap) return;
+    wrap.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-bb-region]");
+      if (!btn) return;
+      wrap.querySelectorAll(".bb-chip").forEach(function (c) { c.classList.toggle("active", c === btn); });
+      fillBigBoard(btn.getAttribute("data-bb-region"));
+    });
+    fillBigBoard("ALL");
   }
 
   /* SPCX inclusion tracker */
@@ -1177,6 +1287,7 @@
       window.scrollTo(0, 0);
     }
     wireSearch(app);
+    wireBigBoard(app);
     fillLiveTape();
   }
 
@@ -1207,6 +1318,16 @@
         if (rec.spcx > 0) f.spacex = rec.spcx;
       }
       f.dailyVerified = { date: date, cov: rec.cov, aum: rec.aum, er: rec.er, src: rec.src, asof: rec.asof };
+    });
+    /* Index mirrors: foreign listings of a US-verified index inherit its
+       verified weights (an S&P 500 tracker is the S&P 500 in any currency). */
+    FUNDS.forEach(function (f) {
+      if (!f.mirror || f.dailyVerified) return;
+      var m = byTicker[f.mirror];
+      if (!m || !m.dailyVerified) return;
+      if ((m.tsla || 0) > 0) f.tsla = m.tsla;
+      if ((m.spacex || 0) > 0) f.spacex = m.spacex;
+      f.dailyVerified = { date: m.dailyVerified.date, src: "mirror", via: m.t };
     });
     route(); // re-render current view with verified numbers
   }

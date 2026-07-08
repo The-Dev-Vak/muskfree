@@ -713,6 +713,21 @@ details.faq-item .faq-body p { margin-bottom: 0.8em; }
 
 .blink { animation: lp-pulse 1s ease-in-out infinite; }
 
+.bureau-rec {
+  margin-top: 26px;
+  border: 2.5px solid var(--green);
+  background: #F0F4EA;
+  padding: 14px 18px;
+}
+.bureau-rec-head { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.22em; color: var(--green); margin-bottom: 6px; }
+.bureau-rec p { font-size: 15.5px; }
+.bureau-rec a { font-family: var(--font-mono); font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--green); }
+.bureau-rec a:hover { background: var(--green); color: var(--paper); }
+.bureau-rec-fine { font-size: 12.5px; color: var(--ink-soft); }
+
+.bb-filters { display: flex; gap: 8px; margin-top: 22px; flex-wrap: wrap; }
+.bb-chip.active { background: var(--ink); color: var(--paper); }
+
 .dv-chip {
   font-family: var(--font-mono);
   font-size: 10.5px;

@@ -44,7 +44,7 @@ function muskScan(rows) {
   return { tsla: +tsla.toFixed(2), spcx: +spcx.toFixed(2), coverage: +coverage.toFixed(1) };
 }
 
-const scannable = FUNDS.filter((f) => (f.type === "ETF" || f.type === "Closed-end fund") && !f.special);
+const scannable = FUNDS.filter((f) => (f.type === "ETF" || f.type === "Closed-end fund") && !f.special && !f.region);
 console.log(`scanning ${scannable.length} funds…`);
 
 const out = { generated: new Date().toISOString(), source: "stockanalysis.com top-25 holdings scan", funds: {} };
@@ -78,7 +78,7 @@ async function secText(url) {
   try { const r = await fetch(url, SEC_UA); return r.ok ? r.text() : null; } catch { return null; }
 }
 
-const mfFunds = FUNDS.filter((f) => (f.type === "Mutual fund" || f.type === "Interval fund") && !f.special);
+const mfFunds = FUNDS.filter((f) => (f.type === "Mutual fund" || f.type === "Interval fund") && !f.special && !f.region);
 console.log(`N-PORT pass: ${mfFunds.length} mutual/interval funds…`);
 const mfMap = await secJSON("https://www.sec.gov/files/company_tickers_mf.json");
 const bySymbol = {};

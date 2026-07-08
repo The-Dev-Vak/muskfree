@@ -450,15 +450,102 @@
       '<section class="cert"><div class="wrap">' +
       '<p class="kicker">Form MF-2 — Full portfolio audit</p>' +
       '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);">Audit the whole thing<span style="color:var(--red)">.</span></h1>' +
-      '<p class="hero-sub" style="margin-top:16px;">One fund at a time is for tourists. Paste every position — ticker plus dollar amount, one per line — and receive a single blended verdict for your entire portfolio. Amounts optional; without them we weight everything equally. Nothing leaves your browser.</p>' +
-      '<div class="pf-entry">' +
-      '<textarea class="pf-input" id="pf-input" rows="8" spellcheck="false" placeholder="VOO 25000\nQQQ 10000\nSCHD 8000\nBND 5000\nTSLA 2000">' + esc(saved) + "</textarea>" +
+      '<p class="hero-sub" style="margin-top:16px;">One fund at a time is for tourists. Paste every position — ticker plus dollar amount, one per line — <b>or drop the positions CSV your brokerage exports</b> (Fidelity, Schwab, Vanguard, Robinhood all have one). You get a single blended verdict plus a De-Musk Plan. Everything is parsed in your browser; nothing is uploaded anywhere.</p>' +
+      '<div class="pf-entry" id="pf-drop">' +
+      '<textarea class="pf-input" id="pf-input" rows="8" spellcheck="false" placeholder="VOO 25000\nQQQ 10000\nSCHD 8000\nBND 5000\nTSLA 2000\n\n…or drag your brokerage CSV anywhere onto this box">' + esc(saved) + "</textarea>" +
       '<div class="pf-actions"><button class="btn" data-audit>Run the audit</button>' +
-      '<button class="btn ghost" data-audit-demo>Show me a demo portfolio</button></div>' +
+      '<label class="btn ghost" style="cursor:pointer;">Import brokerage CSV<input type="file" id="pf-file" accept=".csv,text/csv" style="display:none;"></label>' +
+      '<button class="btn ghost" data-audit-demo>Demo portfolio</button></div>' +
       "</div>" +
       '<div id="pf-results"></div>' +
       "</div></section>"
     );
+  }
+
+  /* Parse a brokerage positions CSV (Fidelity / Schwab / Vanguard /
+     Robinhood exports and most others). Returns "TICKER VALUE" lines. */
+  function csvToPositions(text) {
+    function splitRow(line) {
+      var out = [], cur = "", inQ = false;
+      for (var i = 0; i < line.length; i++) {
+        var ch = line[i];
+        if (ch === '"') inQ = !inQ;
+        else if (ch === "," && !inQ) { out.push(cur); cur = ""; }
+        else cur += ch;
+      }
+      out.push(cur);
+      return out.map(function (s) { return s.trim(); });
+    }
+    var lines = text.split(/\r?\n/).filter(function (l) { return l.trim(); });
+    var symCol = -1, valCol = -1, headerIdx = -1;
+    for (var i = 0; i < Math.min(lines.length, 12); i++) {
+      var cells = splitRow(lines[i]).map(function (c) { return c.toLowerCase().replace(/["']/g, ""); });
+      var s = -1, v = -1;
+      cells.forEach(function (c, j) {
+        if (s === -1 && /^(symbol|ticker|investment|holding)$/.test(c)) s = j;
+        if (v === -1 && /^(market value|current value|total value|value|balance|amount|mkt val \(market value\))$/.test(c)) v = j;
+      });
+      if (s !== -1 && v !== -1) { symCol = s; valCol = v; headerIdx = i; break; }
+    }
+    if (headerIdx === -1) return null;
+    var out = [];
+    for (var r = headerIdx + 1; r < lines.length; r++) {
+      var row = splitRow(lines[r]);
+      var sym = (row[symCol] || "").replace(/["'*]/g, "").trim().toUpperCase();
+      var val = parseFloat((row[valCol] || "").replace(/[^0-9.\-]/g, ""));
+      if (!/^[A-Z][A-Z0-9.\-]{0,9}$/.test(sym)) continue;      // skip cash sweeps, totals, prose
+      if (!isFinite(val) || val <= 0) continue;
+      out.push(sym + " " + Math.round(val));
+    }
+    return out.length ? out.join("\n") : null;
+  }
+
+  /* De-Musk Plan: for each musky position, propose the best registry
+     alternative and quantify the blended before/after. */
+  function demuskPlanHTML(rows, total, muskDollars) {
+    var blended = muskDollars / total * 100;
+    if (blended <= 0.05) return "";
+    var swaps = [], remaining = muskDollars, unswappable = [];
+    rows.forEach(function (r) {
+      if (r.x <= 0.1) return;
+      var alt = null;
+      (r.f.alts || []).some(function (a) {
+        var af = byTicker[a];
+        if (af && !af.special && exposure(af) <= 0.2) { alt = af; return true; }
+        return false;
+      });
+      if (alt) {
+        var altX = exposure(alt);
+        var saved = r.amt * (r.x - altX) / 100;
+        remaining -= saved;
+        swaps.push({ from: r.f, to: alt, amt: r.amt, saved: saved, fromX: r.x, toX: altX });
+      } else {
+        unswappable.push(r);
+      }
+    });
+    if (!swaps.length && !unswappable.length) return "";
+    var after = Math.max(0, remaining) / total * 100;
+    var eq = rows.every(function (r) { return r.amt === 1; });
+    var fmtAmt = function (d) { return eq ? (d / total * 100).toFixed(2) + "% of total" : fmtMoney(Math.round(d)); };
+
+    var html = '<div class="pf-plan"><div class="pf-plan-head">FORM MF-3 · THE DE-MUSK PLAN</div>';
+    if (swaps.length) {
+      html += '<table class="tbl"><thead><tr><th>Swap</th><th>Same lane</th><th>Musk %</th><th>Musk removed</th></tr></thead><tbody>' +
+        swaps.map(function (s) {
+          return "<tr><td><a href='#/f/" + esc(s.from.t) + "'>" + esc(s.from.t) + "</a> → <a href='#/f/" + esc(s.to.t) + "'>" + esc(s.to.t) + "</a></td>" +
+            "<td>" + esc(s.to.n) + "</td>" +
+            '<td class="num">' + fmtPct(s.fromX) + " → " + fmtPct(s.toX) + "</td>" +
+            '<td class="num" style="color:var(--green)">−' + fmtAmt(s.saved) + "</td></tr>";
+        }).join("") + "</tbody></table>";
+    }
+    if (unswappable.length) {
+      html += '<p class="pf-note">No like-for-like Musk-free substitute on file for: ' + unswappable.map(function (r) {
+        return "<b>" + esc(r.f.t) + "</b> (" + fmtPct(r.x) + ")";
+      }).join(", ") + ". Options: trim the position, or accept the Musk and stop reading websites like this one.</p>";
+    }
+    html += '<div class="pf-plan-bottom">Execute every swap and your portfolio goes from <b style="color:var(--red)">' + fmtPct(blended) + "</b> Musk to <b style=\"color:var(--green)\">" + fmtPct(after) + "</b>." +
+      '<div class="pf-plan-fine">Swaps stay in the same broad lane (index style, sector, income) but are NOT identical exposures — different holdings, weights, and tax consequences. Selling in a taxable account can realize gains. This is a parody form, not a fiduciary; talk to a professional before acting.</div></div></div>';
+    return html;
   }
 
   function renderPortfolioResults(text, extras) {
@@ -541,6 +628,7 @@
       "<thead><tr><th>Ticker</th><th>Holding</th><th>Weight</th><th>Musk %</th><th>Musk " + (equalWeighted ? "share" : "dollars") + "</th></tr></thead><tbody>" + tblRows + "</tbody></table></div>" +
       (parsed.unknown.length ? '<p class="pf-note">Not on file (excluded from the math): <b>' + parsed.unknown.map(esc).join(", ") + "</b>. Search “[ticker] full holdings” and inspect manually.</p>" : "") +
       (parsed.noAmount.length ? '<p class="pf-note">No amount given for <b>' + parsed.noAmount.map(esc).join(", ") + "</b> — weighted at your average position size.</p>" : "") +
+      demuskPlanHTML(rows, total, muskDollars) +
       '<div class="cert-actions">' +
       '<a class="btn" href="' + shareURL + '" target="_blank" rel="noopener">Share verdict on X</a>' +
       '<button class="btn ghost" data-print>Print audit</button>' +
@@ -566,6 +654,36 @@
     input.addEventListener("keydown", function (e) {
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") run();
     });
+
+    /* brokerage CSV: file picker + drag-drop */
+    function importCSV(file) {
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var positions = csvToPositions(String(reader.result || ""));
+        if (positions) { input.value = positions; run(); }
+        else {
+          input.value = "";
+          input.placeholder = "Couldn't find Symbol + Value columns in that CSV — export the *positions* view from your brokerage, or type tickers manually.";
+        }
+      };
+      reader.readAsText(file);
+    }
+    var fileEl = scope.querySelector("#pf-file");
+    if (fileEl) fileEl.addEventListener("change", function () { importCSV(fileEl.files[0]); });
+    var drop = scope.querySelector("#pf-drop");
+    if (drop) {
+      ["dragover", "dragenter"].forEach(function (ev) {
+        drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("pf-dragging"); });
+      });
+      ["dragleave", "drop"].forEach(function (ev) {
+        drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("pf-dragging"); });
+      });
+      drop.addEventListener("drop", function (e) {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) importCSV(e.dataTransfer.files[0]);
+      });
+    }
+
     if (input.value.trim()) run();
   }
 
@@ -729,6 +847,123 @@
     }).join("");
     return '<table class="tbl"><caption>Exhibit D — The SPCX Inclusion Tracker: is SpaceX coming to YOUR index?</caption>' +
       "<thead><tr><th>Index family</th><th>Status</th><th>The situation</th></tr></thead><tbody>" + rows + "</tbody></table>";
+  }
+
+  /* ------------- Analytics Annex (inline SVG charts) -------------
+     Single-series marks in the site's semantic red; 2px lines, ≥8px
+     hover targets, recessive grid, direct labels, table fallback. */
+
+  var CHART = { W: 720, H: 300, padL: 46, padR: 96, padT: 18, padB: 34 };
+
+  function chartScale(points, getY) {
+    var max = 0;
+    points.forEach(function (p) { max = Math.max(max, getY(p)); });
+    max = max * 1.15 || 1;
+    return {
+      x: function (i) { return CHART.padL + (CHART.W - CHART.padL - CHART.padR) * (points.length === 1 ? 0.5 : i / (points.length - 1)); },
+      y: function (v) { return CHART.H - CHART.padB - (CHART.H - CHART.padT - CHART.padB) * (v / max); },
+      max: max,
+    };
+  }
+
+  function chartGrid(s, fmt) {
+    var out = "", n = 4;
+    for (var i = 0; i <= n; i++) {
+      var v = s.max * i / n, y = s.y(v);
+      out += '<line x1="' + CHART.padL + '" y1="' + y + '" x2="' + (CHART.W - CHART.padR) + '" y2="' + y + '" stroke="#C9C3AE" stroke-width="1"' + (i === 0 ? ' stroke-opacity="1"' : ' stroke-opacity="0.55" stroke-dasharray="1 3"') + "/>";
+      out += '<text x="' + (CHART.padL - 8) + '" y="' + (y + 3.5) + '" text-anchor="end" class="ch-axis">' + fmt(v) + "</text>";
+    }
+    return out;
+  }
+
+  function lineChartSVG(spec, step) {
+    var pts = spec.points;
+    var s = chartScale(pts, function (p) { return p[1]; });
+    var d = "";
+    pts.forEach(function (p, i) {
+      var x = s.x(i), y = s.y(p[1]);
+      if (i === 0) d += "M" + x + " " + y;
+      else if (step) d += "H" + x + "V" + y;
+      else d += "L" + x + " " + y;
+    });
+    var marks = pts.map(function (p, i) {
+      var x = s.x(i), y = s.y(p[1]);
+      var tip = esc(p[0]) + " · " + p[1] + (spec.unit || "%") + (p[2] ? " — " + esc(p[2]) : "");
+      return '<circle cx="' + x + '" cy="' + y + '" r="3.5" fill="#C8102E"/>' +
+        '<circle cx="' + x + '" cy="' + y + '" r="12" fill="transparent" class="ch-hit" data-tip="' + tip + '"/>';
+    }).join("");
+    var xLabels = pts.map(function (p, i) {
+      if (pts.length > 6 && i % 2 === 1 && i !== pts.length - 1) return "";
+      return '<text x="' + s.x(i) + '" y="' + (CHART.H - 12) + '" text-anchor="middle" class="ch-axis">' + esc(p[0]) + "</text>";
+    }).join("");
+    var last = pts[pts.length - 1];
+    var endLabel = '<text x="' + (s.x(pts.length - 1) + 10) + '" y="' + (s.y(last[1]) + 4) + '" class="ch-endlabel">' + last[1] + (spec.unit || "%") + "</text>";
+    return '<svg viewBox="0 0 ' + CHART.W + " " + CHART.H + '" class="chart" role="img" aria-label="' + esc(spec.title) + '">' +
+      chartGrid(s, function (v) { return (spec.unit === "B" ? "$" + v.toFixed(0) + "B" : v.toFixed(1) + "%"); }) +
+      '<path d="' + d + '" fill="none" stroke="#C8102E" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      marks + xLabels + endLabel + "</svg>";
+  }
+
+  function barChartSVG(spec) {
+    var bars = spec.bars;
+    var rowH = 30, labelW = 210, valW = 60;
+    var H = bars.length * rowH + 14;
+    var max = Math.max.apply(null, bars.map(function (b) { return b[1]; })) * 1.05 || 1;
+    var plotW = CHART.W - labelW - valW - 20;
+    var rows = bars.map(function (b, i) {
+      var y = 8 + i * rowH;
+      var w = Math.max(0, b[1] / max * plotW);
+      var zero = b[1] === 0;
+      return '<text x="' + (labelW - 10) + '" y="' + (y + 15) + '" text-anchor="end" class="ch-cat">' + esc(b[0]) + "</text>" +
+        (zero
+          ? '<rect x="' + labelW + '" y="' + (y + 4) + '" width="2.5" height="14" fill="#0E6B37"/>'
+          : '<rect x="' + labelW + '" y="' + (y + 4) + '" width="' + w + '" height="14" rx="3" fill="#C8102E"/>') +
+        '<rect x="' + labelW + '" y="' + y + '" width="' + (plotW + valW) + '" height="' + rowH + '" fill="transparent" class="ch-hit" data-tip="' + esc(b[0]) + " · " + b[1] + '%"/>' +
+        '<text x="' + (labelW + (zero ? 10 : w + 8)) + '" y="' + (y + 15) + '" class="ch-val"' + (zero ? ' fill="#0E6B37"' : "") + ">" + (zero ? "0% ✓" : b[1] + "%") + "</text>";
+    }).join("");
+    return '<svg viewBox="0 0 ' + CHART.W + " " + H + '" class="chart" role="img" aria-label="' + esc(spec.title) + '">' + rows + "</svg>";
+  }
+
+  function chartCard(spec, svg, exhibit) {
+    var table = '<details class="ch-data"><summary>View the data</summary><table class="tbl">' +
+      "<thead><tr><th>" + (spec.points ? "Point" : "Index") + "</th><th>Value</th>" + (spec.points && spec.points[0] && spec.points[0][2] !== undefined ? "<th>Event</th>" : "") + "</tr></thead><tbody>" +
+      (spec.points || spec.bars).map(function (p) {
+        return "<tr><td>" + esc(p[0]) + '</td><td class="num">' + p[1] + (spec.unit === "B" ? " $B" : "%") + "</td>" + (p[2] !== undefined && spec.points ? "<td>" + esc(p[2] || "") + "</td>" : "") + "</tr>";
+      }).join("") + "</tbody></table></details>";
+    return '<div class="ch-card"><div class="ch-exhibit">' + esc(exhibit) + '</div><h3 class="ch-title">' + esc(spec.title) + '</h3><p class="ch-sub">' + esc(spec.sub) + "</p>" + svg +
+      '<p class="ch-note">' + esc(spec.note) + "</p>" + table + "</div>";
+  }
+
+  function analyticsView() {
+    return (
+      '<section class="cert"><div class="wrap">' +
+      '<p class="kicker">The Analytics Annex</p>' +
+      '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);">The charts<span style="color:var(--red)">.</span></h1>' +
+      '<p class="hero-sub" style="margin-top:16px;">Exposure over time, the passive-flow machine at work, and where the Musk actually concentrates. Figures are curated estimates from index data and analyst flow projections — approximate by nature, honest by policy.</p>' +
+      '<div class="ch-grid">' +
+      chartCard(ANALYTICS.tslaWeight, lineChartSVG(ANALYTICS.tslaWeight), "Exhibit F-1") +
+      chartCard(ANALYTICS.spcxFlows, lineChartSVG(Object.assign({ unit: "B" }, ANALYTICS.spcxFlows), true), "Exhibit F-2") +
+      chartCard(ANALYTICS.indexBars, barChartSVG(ANALYTICS.indexBars), "Exhibit F-3") +
+      "</div>" +
+      '<div style="margin-top:40px;">' + searchboxHTML("an-search") + "</div>" +
+      "</div></section>"
+    );
+  }
+
+  function wireChartTips(scope) {
+    var tip = document.createElement("div");
+    tip.className = "chart-tip";
+    document.body.appendChild(tip);
+    scope.addEventListener("mousemove", function (e) {
+      var hit = e.target.closest && e.target.closest(".ch-hit");
+      if (hit) {
+        tip.textContent = hit.getAttribute("data-tip");
+        tip.style.display = "block";
+        tip.style.left = Math.min(e.pageX + 14, window.innerWidth - 260) + "px";
+        tip.style.top = (e.pageY - 34) + "px";
+      } else tip.style.display = "none";
+    });
+    scope.addEventListener("mouseleave", function () { tip.style.display = "none"; });
   }
 
   /* ------------- SPCX Watch (changelog) ------------- */
@@ -911,6 +1146,11 @@
       document.title = "SPCX Watch — Musk-Free Certified™";
       window.scrollTo(0, 0);
       fillWatchLog();
+    } else if (h === "#/analytics") {
+      app.innerHTML = analyticsView();
+      document.title = "The Analytics Annex — Musk-Free Certified™";
+      window.scrollTo(0, 0);
+      wireChartTips(app);
     } else if (h === "#/index" || h === "#/methodology" || h === "#/faq") {
       app.innerHTML = homeView();
       var target = { "#/index": "musk-index", "#/methodology": null, "#/faq": null }[h];

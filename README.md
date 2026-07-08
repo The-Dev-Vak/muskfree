@@ -99,18 +99,44 @@ Known limits (also stated on-site): holdings feed is top-25 only (a floor, not
 a ceiling), mutual funds have no machine-readable live holdings, and SPCX index
 adds are tracked manually in `SPCX_TRACKER`.
 
+## Build & pipeline scripts
+
+- `node scripts/build-sharepages.mjs` — regenerates `f/*.html` share stubs (one
+  per registry ticker, with fund-specific OG meta) and OG card SVGs. Set
+  `SITE_URL=https://yourdomain.com` before running for correct absolute OG URLs.
+- `bash scripts/build-og-pngs.sh` — rasterizes the OG SVGs to `og/*.png`
+  (qlmanage on macOS, rsvg-convert on Linux).
+- `node scripts/refresh-data.mjs` — the nightly pipeline: re-scans every ETF's
+  visible holdings, writes `data.live.json` (overlay the site loads at boot),
+  `changelog.json` (diffed exposure events), and `feed.xml` (RSS "SPCX Watch").
+- `.github/workflows/refresh.yml` — runs the pipeline nightly on GitHub Actions
+  and commits the results (set the `SITE_URL` repo variable). Pushing this repo
+  to GitHub + enabling Netlify/Vercel auto-deploy makes the whole site
+  self-updating.
+
+Overlay semantics: a scan *detection* is affirmative evidence and overrides the
+registry number (up or down); a scan *miss* never zeroes a registry number
+(top-25 cutoff means absence isn't proof). Funds show a "✓ verified by daily
+scan" chip when covered.
+
 ## Features
 
-- **Single-fund check** (`#/f/TICKER`) — certificate page with stamp, Musk Facts
-  label, alternatives, share-on-X.
+- **Single-fund check** (`#/f/TICKER`) — certificate with stamp, Musk Facts
+  label, live readout panel (price/AUM/ER + top-25 holdings scan, LIVE-ADJUSTED
+  re-stamping), alternatives, share-on-X (unfurls the fund's own OG card via
+  `f/TICKER.html`), and a downloadable verdict card.
+- **Any-ticker live lookups** — tickers outside the registry get a provisional
+  certificate built from live classification + holdings scan.
 - **Form MF-2 full portfolio audit** (`#/portfolio`) — paste `TICKER amount`
-  lines (amounts optional → equal weight), get a blended verdict, ranked
-  contribution table, and share text. Runs entirely client-side; input persists
-  in localStorage.
-- **Musk Index** stats, empire table, leaderboards, methodology, FAQ.
-
-## Nice-to-haves for v2
-
-- Pre-render per-fund pages (`/f/SPY.html`) so each verdict gets its own OG card.
-- Canvas-drawn downloadable verdict image ("save your certificate").
-- Live TSLA/SPCX index weights via a nightly data refresh script.
+  lines or **drop a brokerage positions CSV** (Fidelity/Schwab/Vanguard/
+  Robinhood formats auto-detected). Blended verdict, ranked contribution table,
+  live resolution of unknown tickers, and **Form MF-3: the De-Musk Plan** —
+  concrete same-lane swaps with dollars-of-Musk-removed and a before/after
+  blended number. All client-side; nothing is uploaded.
+- **SPCX Watch** (`#/watch`) — nightly-diffed exposure changelog + RSS feed,
+  plus the index-inclusion tracker.
+- **Analytics Annex** (`#/analytics`) — inline SVG charts: Tesla's S&P weight
+  over time, cumulative forced passive buying of SPCX, Musk exposure by index.
+  Hover tooltips + data-table fallbacks.
+- **Musk Index** stats, live TSLA/SPCX quote cards, empire table, leaderboards,
+  methodology, FAQ.

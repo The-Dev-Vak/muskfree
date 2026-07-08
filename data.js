@@ -334,6 +334,45 @@ FUNDS.push(
   { t: "BLK",   n: "BlackRock, Inc.", type: "Stock", cat: "Individual stock", tsla: 0, note: "Owns ~6% of Tesla — on behalf of index-fund holders like, statistically, you. Owning the asset manager itself: 0% Musk. The recursion is free." }
 );
 
+/* ---------- Analytics Annex data (curated, approximate, labeled as such) ---------- */
+const ANALYTICS = {
+  /* Tesla's weight in the S&P 500, approximate month-end values */
+  tslaWeight: {
+    title: "Tesla’s weight in the S&P 500",
+    sub: "Approximate month-end index weight since inclusion, %",
+    points: [
+      ["Jan 2021", 1.6], ["Nov 2021", 2.4], ["Jun 2022", 1.8], ["Dec 2022", 1.0],
+      ["Jul 2023", 1.9], ["Dec 2023", 1.6], ["Jul 2024", 1.3], ["Dec 2024", 2.3],
+      ["Apr 2025", 1.6], ["Dec 2025", 2.0], ["Jul 2026", 1.71],
+    ],
+    note: "Tesla joined the index in December 2020. Every index-fund dollar tracks these swings automatically — nobody asks you.",
+  },
+  /* Cumulative estimated forced passive buying of SPCX after the IPO */
+  spcxFlows: {
+    title: "Index funds force-buying SpaceX",
+    sub: "Cumulative estimated passive inflows into SPCX from index inclusions, $B",
+    points: [
+      ["Jun 12", 0, "IPO day — no index owns it yet"],
+      ["Jun 18", 5.5, "CRSP total market adds (VTI, VTSAX)"],
+      ["Jun 23", 8.5, "MSCI fast-entry (ACWI, global funds)"],
+      ["Jun 29", 15.0, "Russell 1000 reconstitution (IWB, IWF)"],
+      ["Jul 7", 19.3, "Nasdaq-100 fast-track (QQQ, QQQM)"],
+    ],
+    note: "Analyst estimates, midpoints of published ranges. Next scheduled wave: S&P Total Market, September 2026. The S&P 500 itself remains closed (GAAP rule).",
+  },
+  /* Combined Musk exposure by major index, as of ASOF */
+  indexBars: {
+    title: "Musk exposure by index",
+    sub: "Combined Tesla + SpaceX weight, %, as of " + "July 2026",
+    bars: [
+      ["Nasdaq-100 (QQQ)", 4.2], ["Russell 1000 Growth (IWF)", 3.4], ["Russell 1000 (IWB)", 1.9],
+      ["CRSP Total Market (VTI)", 1.75], ["S&P 500 (SPY, VOO)", 1.71],
+      ["Equal-weight S&P (RSP)", 0.2], ["Dow Jones (DIA)", 0], ["MSCI EAFE — int’l (EFA)", 0],
+    ],
+    note: "The S&P 500 number is all Tesla — zero SpaceX until the committee relents. The Dow remains a Musk-free heritage site.",
+  },
+};
+
 /* Curated musk-free picks shown on the homepage */
 const CLEAN_PICKS = ["DIA", "SCHD", "VGT", "VTV", "VXUS", "BND", "GLD", "IWM"];
 const DIRTY_LEADERBOARD = ["TSLL", "TSLA", "SPCX", "BPTRX", "BFGFX", "XLY", "ARKK", "ARKVX", "DXYZ", "VCR", "TQQQ", "XOVR", "ARKQ", "QQQ"];

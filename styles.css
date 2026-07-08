@@ -741,6 +741,14 @@ details.faq-item .faq-body p { margin-bottom: 0.8em; }
 .ch-data { margin-top: 12px; }
 .ch-data summary { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; color: var(--ink-soft); }
 .ch-data .tbl { margin-top: 10px; }
+@media (max-width: 600px) {
+  /* SVG text is in viewBox units — bump sizes so downscaling stays legible */
+  .ch-axis { font-size: 15px; }
+  .ch-cat { font-size: 15px; }
+  .ch-val { font-size: 15px; }
+  .ch-endlabel { font-size: 17px; }
+}
+
 .chart-tip {
   display: none;
   position: absolute;

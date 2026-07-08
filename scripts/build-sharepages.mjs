@@ -125,5 +125,15 @@ for (const f of FUNDS) {
   fs.writeFileSync(path.join(svgTmp, `${f.t}.svg`), ogSVG(f));
   n++;
 }
-console.log(`built ${n} share stubs in f/ and ${n} OG svgs in og/_svg/`);
+
+/* ---- sitemap + robots (250 indexable verdict pages) ---- */
+const urls = [`${SITE}/`].concat(FUNDS.map((f) => `${SITE}/f/${encodeURIComponent(f.t)}.html`));
+fs.writeFileSync(
+  path.join(root, "sitemap.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+  urls.map((u) => ` <url><loc>${escXml(u)}</loc></url>`).join("\n") + "\n</urlset>\n"
+);
+fs.writeFileSync(path.join(root, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`);
+
+console.log(`built ${n} share stubs in f/, ${n} OG svgs, sitemap.xml (${urls.length} urls), robots.txt`);
 console.log(`SITE_URL=${SITE}`);

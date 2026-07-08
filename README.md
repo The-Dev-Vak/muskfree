@@ -4,6 +4,18 @@
 ETF / mutual fund / stock for Elon Musk exposure (Tesla weight + disclosed SpaceX /
 xAI / Neuralink / Boring Co. stakes) and issues an official-looking verdict stamp.
 
+## Launch checklist
+
+1. Pick a domain, then bake it into the share assets and SEO files:
+   `SITE_URL=https://yourdomain.com node scripts/build-sharepages.mjs && bash scripts/build-og-pngs.sh`
+2. Push this repo to GitHub (private or public), set the `SITE_URL` repository
+   variable, and confirm the "Nightly exposure refresh" Action is enabled —
+   that's the self-updating data + SPCX Watch feed.
+3. Connect the repo to Netlify or Vercel (auto-deploy on push). Done: nightly
+   Action commits → host redeploys → data stays fresh with zero maintenance.
+4. Tweet it (drafts below). The share links (`/f/TICKER.html`) unfurl with each
+   fund's own stamp card.
+
 ## Run locally
 
 ```bash

@@ -534,13 +534,13 @@
 
     var html = '<div class="pf-plan"><div class="pf-plan-head">FORM MF-3 · THE DE-MUSK PLAN</div>';
     if (swaps.length) {
-      html += '<table class="tbl"><thead><tr><th>Swap</th><th>Same lane</th><th>Musk %</th><th>Musk removed</th></tr></thead><tbody>' +
+      html += '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Swap</th><th>Same lane</th><th>Musk %</th><th>Musk removed</th></tr></thead><tbody>' +
         swaps.map(function (s) {
           return "<tr><td><a href='#/f/" + esc(s.from.t) + "'>" + esc(s.from.t) + "</a> → <a href='#/f/" + esc(s.to.t) + "'>" + esc(s.to.t) + "</a></td>" +
             "<td>" + esc(s.to.n) + "</td>" +
             '<td class="num">' + fmtPct(s.fromX) + " → " + fmtPct(s.toX) + "</td>" +
             '<td class="num" style="color:var(--green)">−' + fmtAmt(s.saved) + "</td></tr>";
-        }).join("") + "</tbody></table>";
+        }).join("") + "</tbody></table></div>";
     }
     if (unswappable.length) {
       html += '<p class="pf-note">No like-for-like Musk-free substitute on file for: ' + unswappable.map(function (r) {

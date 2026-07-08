@@ -19,6 +19,15 @@ const SITE = (process.env.SITE_URL || "https://muskfree.example").replace(/\/$/,
 /* ---- load the registry (plain-JS consts) ---- */
 const dataSrc = fs.readFileSync(path.join(root, "data.js"), "utf8");
 const { FUNDS, ASOF } = (0, eval)(`(function(){ ${dataSrc}; return { FUNDS, ASOF }; })()`);
+/* machine-generated extension: gets HTML stubs + tier-generic OG cards
+   (per-fund PNGs for ~700 auto funds would bloat the repo) */
+let GEN = [];
+try {
+  const genSrc = fs.readFileSync(path.join(root, "data.gen.js"), "utf8");
+  GEN = (0, eval)(`(function(){ ${genSrc}; return GEN_FUNDS; })()`)
+    .filter((g) => !FUNDS.some((f) => f.t === g.t))
+    .map((g) => ({ t: g.t, n: g.n, type: "ETF", cat: g.cat, tsla: g.tsla || 0, spacex: g.spacex || 0, autoGen: true }));
+} catch {}
 
 /* ---- verdict logic (kept in sync with app.js) ---- */
 const exposure = (f) => (f.tsla || 0) + (f.spacex || 0) + (f.xai || 0) + (f.other || 0);
@@ -35,6 +44,18 @@ function verdict(f) {
   if (x <= 100) return { stamp: "PURE UNCUT MUSK", sub: "THIS IS THE MUSK", color: "#C8102E" };
   return { stamp: "LEVERAGED MUSK", sub: "MORE MUSK THAN MONEY", color: "#C8102E" };
 }
+function tierSlug(f) {
+  const x = exposure(f);
+  if (f.special) return "contains";
+  if (x < 0) return "anti";
+  if (x === 0) return "free";
+  if (x < 0.5) return "trace";
+  if (x < 5) return "contains";
+  if (x < 15) return "high";
+  if (x < 85) return "extreme";
+  if (x <= 100) return "pure";
+  return "leveraged";
+}
 const fmtPct = (x) => (x === 0 ? "0.0%" : (Math.abs(x) < 1 ? x.toFixed(1) : x % 1 === 0 ? x.toFixed(0) : x.toFixed(1)) + "%");
 const escXml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -47,7 +68,7 @@ function stubHTML(f) {
   const desc = f.special
     ? `${f.n}: ${v.stamp}. Check any ticker for Elon Musk exposure — free, 2 seconds, official-looking stamp included.`
     : `${f.n}${pct}. ${x > 0 ? `Invest $10,000 and ~$${Math.abs(Math.round(x * 100)).toLocaleString("en-US")} of it is Musk enterprises.` : "No Tesla, no SpaceX, no Musk. Certified."} Check any ticker free.`;
-  const og = `${SITE}/og/${encodeURIComponent(f.t)}.png`;
+  const og = f.autoGen ? `${SITE}/og/tier-${tierSlug(f)}.png` : `${SITE}/og/${encodeURIComponent(f.t)}.png`;
   const page = `${SITE}/f/${encodeURIComponent(f.t)}.html`;
   const spa = `../#/f/${encodeURIComponent(f.t)}`;
   return `<!DOCTYPE html>
@@ -125,9 +146,46 @@ for (const f of FUNDS) {
   fs.writeFileSync(path.join(svgTmp, `${f.t}.svg`), ogSVG(f));
   n++;
 }
+for (const f of GEN) {
+  fs.writeFileSync(path.join(fDir, `${f.t}.html`), stubHTML(f));
+  n++;
+}
+/* tier-generic OG cards for auto-registered funds */
+const TIERS = {
+  free:      { t: "", n: "This fund", tsla: 0 },
+  trace:     { t: "", n: "This fund", tsla: 0.3 },
+  contains:  { t: "", n: "This fund", tsla: 2 },
+  high:      { t: "", n: "This fund", tsla: 10 },
+  extreme:   { t: "", n: "This fund", tsla: 30 },
+  pure:      { t: "", n: "This fund", tsla: 100 },
+  leveraged: { t: "", n: "This fund", tsla: 200 },
+  anti:      { t: "", n: "This fund", tsla: -100 },
+};
+for (const [slug, fake] of Object.entries(TIERS)) {
+  const v = verdict(fake);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+<rect width="1200" height="1200" fill="#F2EFE6"/>
+<g transform="translate(0,285)">
+  <rect width="1200" height="630" fill="#F2EFE6"/>
+  <rect x="0" y="0" width="1200" height="34" fill="#16150F"/>
+  <text x="24" y="23" font-family="Courier New, monospace" font-size="15" letter-spacing="2" fill="#F2EFE6">CERTIFICATE OF INSPECTION · BUREAU OF PORTFOLIO PURITY</text>
+  <rect x="26" y="56" width="1148" height="520" fill="none" stroke="#16150F" stroke-width="3"/>
+  <text x="600" y="180" text-anchor="middle" font-family="Arial Black, Arial" font-size="64" font-weight="900" fill="#16150F">IS THERE ELON IN</text>
+  <text x="600" y="252" text-anchor="middle" font-family="Arial Black, Arial" font-size="64" font-weight="900" fill="#16150F">YOUR FUND?</text>
+  <g transform="translate(600,430) rotate(-6)">
+    <rect x="-430" y="-85" width="860" height="170" rx="14" fill="none" stroke="${v.color}" stroke-width="7"/>
+    <text x="0" y="10" text-anchor="middle" font-family="Arial Black, Arial" font-size="${v.stamp.length > 14 ? 44 : 58}" font-weight="900" fill="${v.color}">${escXml(v.stamp)}</text>
+    <text x="0" y="52" text-anchor="middle" font-family="Courier New, monospace" font-size="16" letter-spacing="5" fill="${v.color}">${escXml(v.sub)}</text>
+  </g>
+  <rect x="0" y="596" width="1200" height="34" fill="#16150F"/>
+  <text x="600" y="619" text-anchor="middle" font-family="Courier New, monospace" font-size="15" letter-spacing="3" fill="#F2EFE6">CHECK ANY TICKER FREE · § 420.69</text>
+</g>
+</svg>`;
+  fs.writeFileSync(path.join(svgTmp, `tier-${slug}.svg`), svg);
+}
 
 /* ---- sitemap + robots (250 indexable verdict pages) ---- */
-const urls = [`${SITE}/`].concat(FUNDS.map((f) => `${SITE}/f/${encodeURIComponent(f.t)}.html`));
+const urls = [`${SITE}/`].concat(FUNDS.concat(GEN).map((f) => `${SITE}/f/${encodeURIComponent(f.t)}.html`));
 fs.writeFileSync(
   path.join(root, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -135,5 +193,5 @@ fs.writeFileSync(
 );
 fs.writeFileSync(path.join(root, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`);
 
-console.log(`built ${n} share stubs in f/, ${n} OG svgs, sitemap.xml (${urls.length} urls), robots.txt`);
+console.log(`built ${n} share stubs in f/ (incl ${GEN.length} auto), sitemap.xml (${urls.length} urls), robots.txt`);
 console.log(`SITE_URL=${SITE}`);

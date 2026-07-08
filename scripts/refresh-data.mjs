@@ -21,6 +21,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const dataSrc = fs.readFileSync(path.join(root, "data.js"), "utf8");
 const { FUNDS } = (0, eval)(`(function(){ ${dataSrc}; return { FUNDS }; })()`);
+/* machine-generated extension (see expand-registry.mjs) — scan those too */
+let GEN = [];
+try {
+  const genSrc = fs.readFileSync(path.join(root, "data.gen.js"), "utf8");
+  GEN = (0, eval)(`(function(){ ${genSrc}; return GEN_FUNDS; })()`);
+} catch {}
+const curated = new Set(FUNDS.map((f) => f.t));
+const ALLFUNDS = FUNDS.concat(GEN.filter((g) => !curated.has(g.t)).map((g) => ({ t: g.t, n: g.n, type: "ETF", cat: g.cat })));
 
 async function getJSON(p) {
   try {
@@ -44,7 +52,7 @@ function muskScan(rows) {
   return { tsla: +tsla.toFixed(2), spcx: +spcx.toFixed(2), coverage: +coverage.toFixed(1) };
 }
 
-const scannable = FUNDS.filter((f) => (f.type === "ETF" || f.type === "Closed-end fund") && !f.special && !f.region);
+const scannable = ALLFUNDS.filter((f) => (f.type === "ETF" || f.type === "Closed-end fund") && !f.special && !f.region);
 console.log(`scanning ${scannable.length} funds…`);
 
 const out = { generated: new Date().toISOString(), source: "stockanalysis.com top-25 holdings scan", funds: {} };
@@ -145,7 +153,7 @@ if (prev && prev.funds) {
     const was = prev.funds[t];
     if (!was) continue;
     const curTotal = cur.tsla + cur.spcx, wasTotal = was.tsla + was.spcx;
-    const fund = FUNDS.find((f) => f.t === t);
+    const fund = ALLFUNDS.find((f) => f.t === t);
     const name = fund ? fund.n : t;
     if (was.spcx === 0 && cur.spcx > 0.1) {
       events.push({ date: today, t, type: "spcx-added", from: 0, to: cur.spcx, text: `${t} (${name}) now shows SpaceX at ${cur.spcx}% — SPCX has entered this fund's visible holdings.` });

@@ -118,9 +118,14 @@ adds are tracked manually in `SPCX_TRACKER`.
   `SITE_URL=https://yourdomain.com` before running for correct absolute OG URLs.
 - `bash scripts/build-og-pngs.sh` — rasterizes the OG SVGs to `og/*.png`
   (qlmanage on macOS, rsvg-convert on Linux).
+- `node scripts/expand-registry.mjs` — auto-registration: pulls the full US ETF
+  universe with AUM, takes the top N (default 700) not already curated, scans
+  each one's holdings, and writes `data.gen.js`. The site merges these at boot
+  (marked "auto-registered"), taking searchable coverage to ~1,000 funds.
 - `node scripts/refresh-data.mjs` — the nightly pipeline: re-scans every ETF's
-  visible holdings, writes `data.live.json` (overlay the site loads at boot),
-  `changelog.json` (diffed exposure events), and `feed.xml` (RSS "SPCX Watch").
+  visible holdings (curated + auto-registered), writes `data.live.json` (overlay
+  the site loads at boot), `changelog.json` (diffed exposure events), and
+  `feed.xml` (RSS "SPCX Watch").
 - `scripts/github-workflow-refresh.yml` — nightly GitHub Action. NOTE: parked here
   because the machine that pushed this repo lacked the `workflow` OAuth scope.
   Activate it from your machine with:

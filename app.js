@@ -350,7 +350,13 @@
     else if (x === 0) shareText = f.t + " is officially MUSK-FREE CERTIFIED™. 0.0% Elon. Check your funds:";
     else if (x < 0) shareText = f.t + " is certified ANTI-MUSK (" + fmtPct(x) + " exposure). It shorts Tesla. Check your funds:";
     else shareText = "⚠️ " + f.t + " CONTAINS MUSK — " + fmtPct(x) + " of it is Elon companies. Check your funds:";
-    var shareURL = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText + " ") + "&url=" + encodeURIComponent(location.origin + location.pathname + "#/f/" + f.t);
+    /* Registry funds have pre-rendered share stubs (f/T.html) with their own
+       OG card, so the tweet unfurls with this fund's stamp; provisional live
+       results fall back to the SPA hash route. */
+    var baseDir = location.origin + location.pathname.replace(/[^\/]*$/, "");
+    var sharePage = f.live ? baseDir + "#/f/" + encodeURIComponent(f.t) : baseDir + "f/" + encodeURIComponent(f.t) + ".html";
+    var shareURL = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText + " ") + "&url=" + encodeURIComponent(sharePage);
+    var cardBtn = f.live ? "" : '<a class="btn ghost" href="og/' + encodeURIComponent(f.t) + '.png" download="' + esc(f.t) + '-musk-verdict.png">Download card</a>';
 
     var headLeft = f.live
       ? "Provisional Certificate — Live Scan No. " + certNo
@@ -373,6 +379,7 @@
       holdbars +
       '<div class="cert-actions">' +
       '<a class="btn" href="' + shareURL + '" target="_blank" rel="noopener">Share verdict on X</a>' +
+      cardBtn +
       '<button class="btn ghost" data-print>Print certificate</button>' +
       '<a class="btn ghost" href="#/">Inspect another</a>' +
       "</div>" +

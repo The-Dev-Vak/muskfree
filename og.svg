@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+<rect width="1200" height="1200" fill="#F2EFE6"/>
+<g transform="translate(0,285)">
+  <defs>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="n"/>
+      <feColorMatrix in="n" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.04 0" result="g"/>
+      <feComposite in="g" in2="SourceGraphic" operator="over"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="#F2EFE6"/>
+  <rect width="1200" height="630" fill="transparent" filter="url(#grain)"/>
+  <!-- top strip -->
+  <rect x="0" y="0" width="1200" height="34" fill="#16150F"/>
+  <text x="24" y="23" font-family="Courier New, monospace" font-size="15" letter-spacing="2" fill="#F2EFE6">FORM MF-1 · BUREAU OF PORTFOLIO PURITY · CERTIFICATE OF INSPECTION</text>
+  <!-- border -->
+  <rect x="26" y="58" width="1148" height="546" fill="none" stroke="#16150F" stroke-width="3"/>
+  <rect x="34" y="66" width="1132" height="530" fill="none" stroke="#16150F" stroke-width="1"/>
+  <!-- headline -->
+  <text x="70" y="200" font-family="Arial Black, Arial" font-size="86" font-weight="900" fill="#16150F" letter-spacing="-2">IS THERE ELON IN</text>
+  <text x="70" y="295" font-family="Arial Black, Arial" font-size="86" font-weight="900" fill="#16150F" letter-spacing="-2">YOUR INDEX FUND<tspan fill="#C8102E">?</tspan></text>
+  <text x="70" y="360" font-family="Georgia, serif" font-size="30" font-style="italic" fill="#4E4B3E">Tesla is 1.7% of the S&amp;P 500 — and SpaceX just joined the Nasdaq-100.</text>
+  <!-- stamp -->
+  <g transform="translate(880,455) rotate(-9)">
+    <rect x="-235" y="-78" width="470" height="156" rx="14" fill="none" stroke="#0E6B37" stroke-width="6"/>
+    <rect x="-225" y="-68" width="450" height="136" rx="10" fill="none" stroke="#0E6B37" stroke-width="2.5"/>
+    <text x="0" y="8" text-anchor="middle" font-family="Arial Black, Arial" font-size="58" font-weight="900" fill="#0E6B37">MUSK-FREE</text>
+    <text x="0" y="46" text-anchor="middle" font-family="Courier New, monospace" font-size="17" letter-spacing="6" fill="#0E6B37">CERTIFIED · NO ELON DETECTED</text>
+  </g>
+  <!-- contains musk small stamp -->
+  <g transform="translate(250,480) rotate(6)">
+    <rect x="-160" y="-46" width="320" height="92" rx="10" fill="none" stroke="#C8102E" stroke-width="5"/>
+    <text x="0" y="2" text-anchor="middle" font-family="Arial Black, Arial" font-size="36" font-weight="900" fill="#C8102E">CONTAINS MUSK</text>
+    <text x="0" y="30" text-anchor="middle" font-family="Courier New, monospace" font-size="13" letter-spacing="4" fill="#C8102E">ELON DETECTED · 1.9%</text>
+  </g>
+  <!-- bottom -->
+  <rect x="0" y="596" width="1200" height="34" fill="#16150F"/>
+  <text x="600" y="619" text-anchor="middle" font-family="Courier New, monospace" font-size="15" letter-spacing="3" fill="#F2EFE6">CHECK ANY ETF · MUTUAL FUND · STOCK — FREE · 2 SECONDS · § 420.69</text>
+</g>
+</svg>

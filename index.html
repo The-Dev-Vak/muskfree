@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Musk-Free Certified™ — Is there Elon in your index fund?</title>
+  <meta name="description" content="Type any ticker — ETF, mutual fund, or stock — and get an official-looking verdict on its Elon Musk exposure. Tesla weight, SpaceX (SPCX) exposure since the record IPO, and Musk-free alternatives." />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Is there Elon Musk in your index fund?" />
+  <meta property="og:description" content="Check any ETF, mutual fund, or stock for Musk exposure. Get the stamp. Free, fast, and bureaucratically satisfying." />
+  <meta property="og:image" content="og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Is there Elon Musk in your index fund?" />
+  <meta name="twitter:description" content="Type a ticker. Get an official verdict. MUSK-FREE CERTIFIED™ or CONTAINS MUSK — find out in 2 seconds." />
+  <meta name="twitter:image" content="og.png" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23F2EFE6' stroke='%23C8102E' stroke-width='5'/%3E%3Ctext x='32' y='42' font-family='Arial Black' font-size='26' font-weight='900' text-anchor='middle' fill='%23C8102E'%3EMF%3C/text%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Bureaucratic top strip -->
+  <div class="topstrip" aria-hidden="true">
+    <span>FORM MF-1 (REV. 07-2026)</span>
+    <span class="topstrip-mid">BUREAU OF PORTFOLIO PURITY · UNOFFICIAL · UNAFFILIATED · UNBOTHERED</span>
+    <span>OMB No. 6900-0420</span>
+  </div>
+
+  <!-- Verdict ticker tape -->
+  <div class="tape" aria-hidden="true">
+    <div class="tape-track" id="tape-track"></div>
+  </div>
+
+  <header class="masthead">
+    <a class="brand" href="#/">
+      <span class="brand-seal">MF</span>
+      <span class="brand-word">MUSK&#8209;FREE<em>CERTIFIED™</em></span>
+    </a>
+    <nav class="nav">
+      <a href="#/" data-nav>Check a fund</a>
+      <a href="#/portfolio" data-nav>Full audit</a>
+      <a href="#/index" data-nav>The Musk Index</a>
+      <a href="#/methodology" data-nav>Methodology</a>
+      <a href="#/faq" data-nav>FAQ</a>
+    </nav>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <p class="footer-title">MUSK-FREE CERTIFIED™</p>
+        <p>A public-service parody with real data. Holdings figures are approximate, compiled <span id="footer-asof"></span> from public fund disclosures, and drift constantly. Always verify against the fund issuer's official holdings page before acting.</p>
+      </div>
+      <div>
+        <p class="footer-title">NOT ADVICE</p>
+        <p>Nothing here is investment, legal, or tax advice. We are not affiliated with, endorsed by, or currently being sued by Elon Musk, Tesla, SpaceX, xAI, or any fund issuer. Do your own research. Consult a professional. Hug a loved one.</p>
+      </div>
+      <div>
+        <p class="footer-title">COLOPHON</p>
+        <p>No trackers, no cookies, no accounts. Static files, one public market-data API (queried by your browser, not by us), and strong opinions. Data errors? Holdings changed? Tell us on X and we'll re-stamp it.</p>
+      </div>
+    </div>
+    <p class="footer-legal">This certificate confers no legal rights and approximately one social-media flex. § 420.69</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="live.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

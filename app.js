@@ -53,7 +53,7 @@
     if (x < 0.5) return { key: "trace", stamp: "TRACE MUSK", sub: "HOMEOPATHIC LEVELS", cls: "olive", short: "TRACE MUSK", tone: "bad" };
     if (x < 5) return { key: "contains", stamp: "CONTAINS MUSK", sub: "ELON DETECTED", cls: "red", short: "CONTAINS MUSK ✗", tone: "bad" };
     if (x < 15) return { key: "high", stamp: "HIGH MUSK CONTENT", sub: "SUBSTANTIAL ELON WITHIN", cls: "red", short: "HIGH MUSK", tone: "bad" };
-    if (x < 60) return { key: "extreme", stamp: "EXTREMELY MUSKY", sub: "APPROACH WITH CAUTION", cls: "red", short: "EXTREMELY MUSKY", tone: "bad" };
+    if (x < 85) return { key: "extreme", stamp: "EXTREMELY MUSKY", sub: "APPROACH WITH CAUTION", cls: "red", short: "EXTREMELY MUSKY", tone: "bad" };
     if (x <= 100) return { key: "pure", stamp: "PURE UNCUT MUSK", sub: "THIS IS THE MUSK", cls: "red", short: "100% MUSK", tone: "bad" };
     return { key: "leveraged", stamp: "LEVERAGED MUSK", sub: "MORE MUSK THAN MONEY", cls: "red", short: "LEVERAGED MUSK", tone: "bad" };
   }
@@ -373,7 +373,11 @@
       '<h1 class="cert-ticker">' + esc(f.t) + "</h1>" +
       '<p class="cert-fullname">' + esc(f.n) + "</p>" +
       '<p class="cert-meta"><span>' + metaBits + "</span>" +
-      (f.dailyVerified ? '<span class="dv-chip">✓ verified by daily scan · ' + esc(f.dailyVerified.date) + "</span>" : "") +
+      (f.dailyVerified
+        ? '<span class="dv-chip">' + (f.dailyVerified.src === "nport"
+          ? "✓ verified via SEC N-PORT filing · holdings as of " + esc(f.dailyVerified.asof || "last quarter")
+          : "✓ verified by daily scan · " + esc(f.dailyVerified.date)) + "</span>"
+        : "") +
       "</p>" +
       '<div class="cert-stampzone">' + stampHTML(f, "lg") + "</div>" +
       dollarLine +
@@ -1189,9 +1193,20 @@
       var f = byTicker[t];
       var rec = overlay.funds[t];
       if (!f || f.special) return;
-      if (rec.tsla > 0) f.tsla = rec.tsla;
-      if (rec.spcx > 0) f.spacex = rec.spcx;
-      f.dailyVerified = { date: date, cov: rec.cov, aum: rec.aum, er: rec.er };
+      if (rec.src === "nport") {
+        /* N-PORT is the complete portfolio — zeros are affirmative too,
+           EXCEPT for SPCX in filings dated before its index-inclusion wave
+           (June 2026): those filings couldn't have held it yet. */
+        f.tsla = rec.tsla;
+        if (rec.spcx > 0 || (rec.asof && rec.asof >= "2026-06-18")) {
+          f.spacex = rec.spcx;
+          f.unverified = false;
+        }
+      } else {
+        if (rec.tsla > 0) f.tsla = rec.tsla;
+        if (rec.spcx > 0) f.spacex = rec.spcx;
+      }
+      f.dailyVerified = { date: date, cov: rec.cov, aum: rec.aum, er: rec.er, src: rec.src, asof: rec.asof };
     });
     route(); // re-render current view with verified numbers
   }

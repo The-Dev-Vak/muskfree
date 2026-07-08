@@ -120,9 +120,12 @@ var LIVE = (function () {
     });
   }
 
-  /* Live enrichment for a registry fund: quote + overview + scan */
+  /* Live enrichment for a registry fund: quote + overview + scan.
+     Mutual funds are skipped — their API endpoints don't serve CORS
+     and their verification comes from SEC N-PORT via the overlay. */
   function enrich(f) {
     var kind = kindOf(f);
+    if (kind === "mutf") return Promise.resolve(null);
     var wants = [quote(kind, f.t), overview(kind, f.t)];
     var scannable = kind === "e" || f.type === "Closed-end fund";
     if (scannable) wants.push(holdings(f.t));

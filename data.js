@@ -173,7 +173,7 @@ const FUNDS = [
   { t: "VTTSX", n: "Vanguard Target Retirement 2060", type: "Mutual fund", cat: "Target date", tsla: 0.9, spacex: 0.15, alts: [] },
   { t: "VTHRX", n: "Vanguard Target Retirement 2030", type: "Mutual fund", cat: "Target date", tsla: 0.6, spacex: 0.1, alts: [] },
   { t: "VBIAX", n: "Vanguard Balanced Index Fund", type: "Mutual fund", cat: "60/40 balanced", tsla: 0.9, spacex: 0.15, alts: ["VWELX"] },
-  { t: "VWELX", n: "Vanguard Wellington Fund", type: "Mutual fund", cat: "Active balanced", tsla: 0, note: "Running since 1929 on dividends and value stocks. Has survived 17 recessions, zero Tesla positions, and so far, one SpaceX IPO." },
+  { t: "VWELX", n: "Vanguard Wellington Fund", type: "Mutual fund", cat: "Active balanced", tsla: 1.0, alts: ["DODGX","PRWCX"], note: "Running since 1929 — and per its latest SEC filing, currently running with about 1% Tesla. Even the old guard picked some up. We checked the actual N-PORT so you don't have to." },
 
   /* ---------- Maximum musk ---------- */
   { t: "TSLA",  n: "Tesla, Inc.", type: "Stock", cat: "The original source", tsla: 100, alts: ["F","GM","RIVN"], aliases: ["tesla"], note: "This is not a fund with Musk in it. This is the Musk. 100% by definition, plus the CEO's undivided attention, minus the CEO's undivided attention." },
@@ -183,7 +183,7 @@ const FUNDS = [
   { t: "TSLZ",  n: "T-Rex 2X Inverse Tesla Daily Target ETF", type: "ETF", cat: "Inverse single stock", tsla: -200, alts: [], note: "Minus two hundred percent Musk. The most anti-Musk instrument legally available to a retail investor." },
   { t: "DXYZ",  n: "Destiny Tech100", type: "Closed-end fund", cat: "Private tech", spacex: 16.2, alts: [], aliases: ["destiny"], note: "Bought SpaceX while it was private and rode the IPO up. Still usually trades at a rich premium to asset value — the Musk costs extra here. Also holds a slug of Anthropic now." },
   { t: "XOVR",  n: "ERShares Private-Public Crossover ETF", type: "ETF", cat: "Crossover", spacex: 16.6, tsla: 0.8, alts: [], note: "The first ETF to hold SpaceX shares — back when that required a workaround wrapped in a loophole wrapped in an expense ratio. Now it's just a stock anyone can buy, which rather undercuts the pitch." },
-  { t: "BPTRX", n: "Baron Partners Fund", type: "Mutual fund", cat: "Concentrated growth", tsla: 20.4, spacex: 33.0, alts: [], aliases: ["baron"], note: "One-third SpaceX, one-fifth Tesla: over half this mutual fund is Musk enterprises. Ron Baron bought SpaceX privately for a decade and has said he'll hold for decades more. He is not bluffing." },
+  { t: "BPTRX", n: "Baron Partners Fund", type: "Mutual fund", cat: "Concentrated growth", tsla: 20.4, spacex: 33.0, alts: [], aliases: ["baron"], note: "Per its own SEC filing (March 2026): 23% Tesla plus 37% SpaceX across share classes — roughly SIXTY percent of this mutual fund is Musk enterprises. The most Musk-concentrated fund in America, now with government paperwork to prove it." },
   { t: "BFGFX", n: "Baron Focused Growth Fund", type: "Mutual fund", cat: "Concentrated growth", tsla: 9.0, spacex: 12.0, alts: [] },
 
   /* ---------- Musk private companies (searchable) ---------- */
@@ -285,7 +285,7 @@ FUNDS.push(
   { t: "VTINX", n: "Vanguard Target Retirement Income", type: "Mutual fund", cat: "Target date", tsla: 0.3, spacex: 0.04, alts: [] },
   { t: "FDKLX", n: "Fidelity Freedom Index 2060", type: "Mutual fund", cat: "Target date", tsla: 0.9, unverified: true, alts: [] },
   { t: "FCNTX", n: "Fidelity Contrafund", type: "Mutual fund", cat: "Active large growth", tsla: 0, unverified: true, note: "Historically a Meta-and-Berkshire shop with no Tesla habit — but it held private SpaceX in the past. Actively managed; verify current holdings." },
-  { t: "FDGRX", n: "Fidelity Growth Company Fund", type: "Mutual fund", cat: "Active large growth", tsla: 1.5, unverified: true, note: "Held private SpaceX pre-IPO. Post-IPO positioning is the manager's call — check the latest report." },
+  { t: "FDGRX", n: "Fidelity Growth Company Fund", type: "Mutual fund", cat: "Active large growth", tsla: 1.9, spacex: 2.9, note: "Bought SpaceX while private and kept it through the IPO — its SEC filing shows nearly 3%, one of the larger mainstream-fund SpaceX bets." },
   { t: "TRBCX", n: "T. Rowe Price Blue Chip Growth Fund", type: "Mutual fund", cat: "Active large growth", tsla: 1.0, unverified: true, alts: ["VTV"] },
   { t: "DODGX", n: "Dodge & Cox Stock Fund", type: "Mutual fund", cat: "Active value", tsla: 0, note: "Old-school value discipline since 1965. Musk multiples need not apply." },
   { t: "PRWCX", n: "T. Rowe Price Capital Appreciation Fund", type: "Mutual fund", cat: "Active balanced", tsla: 0 },

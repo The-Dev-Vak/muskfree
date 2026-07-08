@@ -66,6 +66,71 @@ if (ok < scannable.length * 0.5) {
   process.exit(1);
 }
 
+/* ---- SEC N-PORT pass: mutual & interval funds (full portfolios, quarterly) ----
+   The market-data API can't see mutual-fund holdings; the SEC can. N-PORT
+   filings list every position with % of net assets. Complete data, so here a
+   zero IS affirmative (as of the filing's quarter-end). */
+const SEC_UA = { headers: { "User-Agent": "muskfree-certified research contact@muskfree.example" } };
+async function secJSON(url) {
+  try { const r = await fetch(url, SEC_UA); return r.ok ? r.json() : null; } catch { return null; }
+}
+async function secText(url) {
+  try { const r = await fetch(url, SEC_UA); return r.ok ? r.text() : null; } catch { return null; }
+}
+
+const mfFunds = FUNDS.filter((f) => (f.type === "Mutual fund" || f.type === "Interval fund") && !f.special);
+console.log(`N-PORT pass: ${mfFunds.length} mutual/interval funds…`);
+const mfMap = await secJSON("https://www.sec.gov/files/company_tickers_mf.json");
+const bySymbol = {};
+if (mfMap && mfMap.data) for (const r of mfMap.data) bySymbol[r[3]] = { cik: r[0], series: r[1] };
+
+function nportMusk(xml) {
+  let tsla = 0, spcx = 0, fundLike = 0;
+  for (const m of xml.matchAll(/<invstOrSec>([\s\S]*?)<\/invstOrSec>/g)) {
+    const blk = m[1];
+    const name = (blk.match(/<name>([\s\S]*?)<\/name>/) || [, ""])[1];
+    const pct = parseFloat((blk.match(/<pctVal>([\s\S]*?)<\/pctVal>/) || [, "0"])[1]) || 0;
+    if (/\btesla\b/i.test(name)) tsla += pct;
+    else if (/space\s?x|space exploration/i.test(name)) spcx += pct;
+    /* issuerCat RF = registered fund — fund-of-funds hold other funds, not stocks */
+    if (/<issuerCat>RF<\/issuerCat>/.test(blk) || /\b(index fund|investor shares|admiral|instl|institutional shares|etf)\b/i.test(name)) fundLike += pct;
+  }
+  return { tsla: +tsla.toFixed(2), spcx: +spcx.toFixed(2), fundLike: fundLike };
+}
+
+const startdt = new Date(Date.now() - 210 * 86400000).toISOString().slice(0, 10);
+const enddt = new Date().toISOString().slice(0, 10);
+let nportOk = 0, nportFail = 0;
+for (const f of mfFunds) {
+  const info = bySymbol[f.t];
+  if (!info) { nportFail++; continue; }
+  const search = await secJSON(
+    `https://efts.sec.gov/LATEST/search-index?q=%22${info.series}%22&forms=NPORT-P&dateRange=custom&startdt=${startdt}&enddt=${enddt}`
+  );
+  await sleep(150);
+  const hits = search?.hits?.hits || [];
+  if (!hits.length) { nportFail++; continue; }
+  hits.sort((a, b) => (a._source.file_date < b._source.file_date ? 1 : -1));
+  const top = hits[0];
+  const adsh = top._id.split(":")[0].replace(/-/g, "");
+  const cik = parseInt(top._source.ciks[0], 10);
+  const xml = await secText(`https://www.sec.gov/Archives/edgar/data/${cik}/${adsh}/primary_doc.xml`);
+  await sleep(150);
+  if (!xml || xml.indexOf(`<seriesId>${info.series}</seriesId>`) === -1) { nportFail++; continue; }
+  const scan = nportMusk(xml);
+  /* Fund-of-funds: the portfolio is other funds, so a zero here says nothing
+     about look-through Musk exposure. Keep the registry estimate; no false
+     verification badge. */
+  if (scan.fundLike > 30 && scan.tsla + scan.spcx === 0) { nportFail++; await sleep(50); continue; }
+  out.funds[f.t] = {
+    tsla: scan.tsla, spcx: scan.spcx, cov: 100,
+    src: "nport", asof: top._source.period_ending || null,
+    aum: null, er: null,
+  };
+  nportOk++;
+}
+console.log(`N-PORT ok=${nportOk} fail=${nportFail}`);
+
 /* ---- diff vs previous run → changelog events ---- */
 const livePath = path.join(root, "data.live.json");
 const logPath = path.join(root, "changelog.json");

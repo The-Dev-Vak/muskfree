@@ -31,7 +31,7 @@ function verdict(f) {
   if (x < 0.5) return { stamp: "TRACE MUSK", sub: "HOMEOPATHIC LEVELS", color: "#8A7B1E" };
   if (x < 5) return { stamp: "CONTAINS MUSK", sub: "ELON DETECTED", color: "#C8102E" };
   if (x < 15) return { stamp: "HIGH MUSK CONTENT", sub: "SUBSTANTIAL ELON WITHIN", color: "#C8102E" };
-  if (x < 60) return { stamp: "EXTREMELY MUSKY", sub: "APPROACH WITH CAUTION", color: "#C8102E" };
+  if (x < 85) return { stamp: "EXTREMELY MUSKY", sub: "APPROACH WITH CAUTION", color: "#C8102E" };
   if (x <= 100) return { stamp: "PURE UNCUT MUSK", sub: "THIS IS THE MUSK", color: "#C8102E" };
   return { stamp: "LEVERAGED MUSK", sub: "MORE MUSK THAN MONEY", color: "#C8102E" };
 }

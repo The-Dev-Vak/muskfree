@@ -372,7 +372,9 @@
       '<p class="cert-eyebrow">This document certifies the Musk content of</p>' +
       '<h1 class="cert-ticker">' + esc(f.t) + "</h1>" +
       '<p class="cert-fullname">' + esc(f.n) + "</p>" +
-      '<p class="cert-meta"><span>' + metaBits + "</span></p>" +
+      '<p class="cert-meta"><span>' + metaBits + "</span>" +
+      (f.dailyVerified ? '<span class="dv-chip">✓ verified by daily scan · ' + esc(f.dailyVerified.date) + "</span>" : "") +
+      "</p>" +
       '<div class="cert-stampzone">' + stampHTML(f, "lg") + "</div>" +
       dollarLine +
       noteHTML +
@@ -729,6 +731,40 @@
       "<thead><tr><th>Index family</th><th>Status</th><th>The situation</th></tr></thead><tbody>" + rows + "</tbody></table>";
   }
 
+  /* ------------- SPCX Watch (changelog) ------------- */
+
+  function watchView() {
+    return (
+      '<section class="cert"><div class="wrap">' +
+      '<p class="kicker">SPCX Watch — daily surveillance</p>' +
+      '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);">The exposure changelog<span style="color:var(--red)">.</span></h1>' +
+      '<p class="hero-sub" style="margin-top:16px;">Every night we re-scan the visible holdings of every fund in the registry and log what changed — SpaceX arriving in a fund, exiting one, or Musk exposure shifting by half a point or more. Subscribe to the <a href="feed.xml">RSS feed</a> to know the moment SPCX lands in yours.</p>' +
+      '<div id="watch-log" style="margin-top:36px;"><p class="lp-clean">Loading the log…</p></div>' +
+      '<div style="margin-top:44px;overflow-x:auto;">' + trackerHTML() + "</div>" +
+      "</div></section>"
+    );
+  }
+
+  function fillWatchLog() {
+    var el = document.getElementById("watch-log");
+    if (!el || !window.fetch) return;
+    fetch("changelog.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (log) {
+      if (!log) { el.innerHTML = '<p class="lp-clean">No log available (are you running locally without the pipeline output?).</p>'; return; }
+      if (!log.length) {
+        el.innerHTML = '<div class="nf-box"><div class="prose"><p><b>No exposure changes on file yet.</b> The nightly scanner started recently — events appear here the first time a fund’s visible Musk holdings move. Quiet log, calm markets, watchful bureau.</p></div></div>';
+        return;
+      }
+      var rows = log.slice(0, 100).map(function (e) {
+        var chip = e.type === "spcx-added" ? '<span class="tr-chip tr-in">SPCX DETECTED</span>'
+          : e.type === "spcx-removed" ? '<span class="tr-chip tr-out">SPCX EXITED</span>'
+          : '<span class="tr-chip tr-pending">SHIFT</span>';
+        return "<tr><td class='num'>" + esc(e.date) + "</td><td><a href='#/f/" + esc(e.t) + "'>" + esc(e.t) + "</a></td><td>" + chip + "</td><td>" + esc(e.text) + "</td></tr>";
+      }).join("");
+      el.innerHTML = '<table class="tbl"><caption>Exhibit E — Logged exposure events (newest first)</caption>' +
+        "<thead><tr><th>Date</th><th>Ticker</th><th>Event</th><th>Detail</th></tr></thead><tbody>" + rows + "</tbody></table>";
+    }).catch(function () {});
+  }
+
   function notFoundView(q) {
     return (
       '<section class="cert"><div class="wrap">' +
@@ -870,6 +906,11 @@
       document.title = "Full Portfolio Audit — Musk-Free Certified™";
       window.scrollTo(0, 0);
       wirePortfolio(app);
+    } else if (h === "#/watch") {
+      app.innerHTML = watchView();
+      document.title = "SPCX Watch — Musk-Free Certified™";
+      window.scrollTo(0, 0);
+      fillWatchLog();
     } else if (h === "#/index" || h === "#/methodology" || h === "#/faq") {
       app.innerHTML = homeView();
       var target = { "#/index": "musk-index", "#/methodology": null, "#/faq": null }[h];
@@ -896,6 +937,28 @@
   }
 
   window.addEventListener("hashchange", route);
+
+  /* ---------------- daily-scan overlay ----------------
+     data.live.json is regenerated nightly by scripts/refresh-data.mjs.
+     Detection is affirmative evidence (use it, up or down); a scan MISS
+     is not proof of absence (top-25 cutoff), so zeros never overwrite. */
+  function applyDailyOverlay(overlay) {
+    if (!overlay || !overlay.funds) return;
+    var date = (overlay.generated || "").slice(0, 10);
+    Object.keys(overlay.funds).forEach(function (t) {
+      var f = byTicker[t];
+      var rec = overlay.funds[t];
+      if (!f || f.special) return;
+      if (rec.tsla > 0) f.tsla = rec.tsla;
+      if (rec.spcx > 0) f.spacex = rec.spcx;
+      f.dailyVerified = { date: date, cov: rec.cov, aum: rec.aum, er: rec.er };
+    });
+    route(); // re-render current view with verified numbers
+  }
+  if (window.fetch) {
+    fetch("data.live.json").then(function (r) { return r.ok ? r.json() : null; })
+      .then(applyDailyOverlay).catch(function () {});
+  }
 
   /* ---------------- init ---------------- */
 

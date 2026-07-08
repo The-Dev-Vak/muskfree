@@ -706,6 +706,17 @@ details.faq-item .faq-body p { margin-bottom: 0.8em; }
 
 .blink { animation: lp-pulse 1s ease-in-out infinite; }
 
+.dv-chip {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--green);
+  border: 1.5px solid var(--green);
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
 /* ---------------- footer ---------------- */
 
 .footer { border-top: 3px double var(--ink); margin-top: 80px; padding: 44px 24px 28px; background: var(--paper-dim); }

@@ -1,0 +1,43 @@
+name: Nightly exposure refresh
+
+on:
+  schedule:
+    - cron: "23 9 * * *" # 09:23 UTC daily — after US close data settles
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Scan all registry funds
+        env:
+          SITE_URL: ${{ vars.SITE_URL || 'https://muskfree.example' }}
+        run: node scripts/refresh-data.mjs
+
+      - name: Rebuild share stubs (metadata may reference new numbers)
+        env:
+          SITE_URL: ${{ vars.SITE_URL || 'https://muskfree.example' }}
+        run: node scripts/build-sharepages.mjs
+
+      - name: Rasterize OG cards
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q librsvg2-bin imagemagick
+          bash scripts/build-og-pngs.sh
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "musk-free-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data.live.json changelog.json feed.xml f/ og/
+          git diff --cached --quiet && echo "no changes" && exit 0
+          git commit -m "nightly: exposure scan $(date -u +%F)"
+          git push

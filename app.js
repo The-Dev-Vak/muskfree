@@ -441,6 +441,8 @@
       (f.dailyVerified
         ? '<span class="dv-chip">' + (f.dailyVerified.src === "nport"
           ? "✓ verified via SEC N-PORT filing · holdings as of " + esc(f.dailyVerified.asof || "last quarter")
+          : f.dailyVerified.src === "issuer"
+            ? "✓ verified via the issuer’s own daily holdings file · " + esc(f.dailyVerified.date)
           : f.dailyVerified.src === "mirror"
             ? "✓ mirrors " + esc(f.dailyVerified.via) + " — same index, verified daily"
             : "✓ verified by daily scan · " + esc(f.dailyVerified.date)) + "</span>"
@@ -1320,8 +1322,8 @@
      data.live.json is regenerated nightly by scripts/refresh-data.mjs.
      Detection is affirmative evidence (use it, up or down); a scan MISS
      is not proof of absence (top-25 cutoff), so zeros never overwrite. */
-  function applyDailyOverlay(overlay) {
-    if (!overlay || !overlay.funds) return;
+  function applyDailyOverlay(overlay, intl) {
+    if (!overlay || !overlay.funds) overlay = { funds: {} };
     var date = (overlay.generated || "").slice(0, 10);
     Object.keys(overlay.funds).forEach(function (t) {
       var f = byTicker[t];
@@ -1352,11 +1354,27 @@
       if ((m.spacex || 0) > 0) f.spacex = m.spacex;
       f.dailyVerified = { date: m.dailyVerified.date, src: "mirror", via: m.t };
     });
+    /* Issuer-direct holdings files (CA/EU iShares): complete daily portfolios
+       with fund-of-funds look-through — beats mirrors and statics. */
+    if (intl && intl.funds) {
+      var iDate = (intl.generated || "").slice(0, 10);
+      Object.keys(intl.funds).forEach(function (t) {
+        var f = byTicker[t];
+        var rec = intl.funds[t];
+        if (!f || f.special) return;
+        f.tsla = rec.tsla;
+        f.spacex = rec.spcx;
+        f.unverified = false;
+        f.dailyVerified = { date: iDate, src: "issuer", asof: rec.asof };
+      });
+    }
     route(); // re-render current view with verified numbers
   }
   if (window.fetch) {
-    fetch("data.live.json").then(function (r) { return r.ok ? r.json() : null; })
-      .then(applyDailyOverlay).catch(function () {});
+    Promise.all([
+      fetch("data.live.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch("data.intl.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    ]).then(function (res) { applyDailyOverlay(res[0], res[1]); });
   }
 
   /* ---------------- init ---------------- */

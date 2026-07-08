@@ -348,15 +348,15 @@ FUNDS.push(
   { t: "HXS",  region: "CA", n: "Global X S&P 500 Index Corporate Class ETF", type: "ETF", cat: "S&P 500 index (swap)", tsla: 1.7, aumB: 3, mirror: "VOO", alts: ["XIU"], note: "Swap-based: you don't own the shares, you own a promise of their return — including the ~1.7% of that return that is Tesla. Synthetic Musk is still Musk." },
   { t: "VUN",  region: "CA", n: "Vanguard US Total Market Index ETF (CAD)", type: "ETF", cat: "Total US market index", tsla: 1.5, spacex: 0.25, aumB: 6, mirror: "VTI", alts: ["XIU","VDY"], note: "Tracks the same CRSP index as VTI — which means it inherited SpaceX on June 18 along with every VTI holder." },
   { t: "XUU",  region: "CA", n: "iShares Core S&P US Total Market ETF (CAD)", type: "ETF", cat: "Total US market index", tsla: 1.5, unverified: true, aumB: 3, mirror: "ITOT", alts: ["XIU"] },
-  { t: "XQQ",  region: "CA", n: "iShares Nasdaq-100 Index ETF (CAD-Hedged)", type: "ETF", cat: "Nasdaq-100 index", tsla: 3.2, spacex: 1.0, aumB: 2.5, mirror: "QQQ", alts: ["XIU","ZLB"], aliases: ["xqq.to"] },
+  { t: "XQQ",  region: "CA", n: "iShares Nasdaq-100 Index ETF (CAD-Hedged)", type: "ETF", cat: "Nasdaq-100 index", tsla: 3.2, spacex: 1.3, aumB: 2.5, mirror: "QQQ", alts: ["XIU","ZLB"], aliases: ["xqq.to"] },
   { t: "ZQQ",  region: "CA", n: "BMO Nasdaq 100 Equity Hedged to CAD ETF", type: "ETF", cat: "Nasdaq-100 index", tsla: 3.2, spacex: 1.0, aumB: 2, mirror: "QQQ", alts: ["ZLB"] },
   { t: "ZNQ",  region: "CA", n: "BMO Nasdaq 100 Equity Index ETF (CAD)", type: "ETF", cat: "Nasdaq-100 index", tsla: 3.2, spacex: 1.0, aumB: 1.5, mirror: "QQQ", alts: ["ZLB"] },
   { t: "VEQT", region: "CA", n: "Vanguard All-Equity ETF Portfolio", type: "ETF", cat: "Global all-equity wrap", tsla: 0.95, spacex: 0.15, aumB: 6, alts: ["XIU","VCN"], aliases: ["veqt.to"], note: "The famous one-ticket portfolio: ~45% US market inside, so roughly 1.1% of your 'set and forget' is Musk enterprises. You set it; they forgot to mention that." },
-  { t: "XEQT", region: "CA", n: "iShares Core Equity ETF Portfolio", type: "ETF", cat: "Global all-equity wrap", tsla: 0.95, spacex: 0.15, aumB: 6, alts: ["XIU","XIC"], aliases: ["xeqt.to"] },
+  { t: "XEQT", region: "CA", n: "iShares Core Equity ETF Portfolio", type: "ETF", cat: "Global all-equity wrap", tsla: 0.75, aumB: 20, alts: ["XIU","XIC"], aliases: ["xeqt.to"] },
   { t: "VGRO", region: "CA", n: "Vanguard Growth ETF Portfolio (80/20)", type: "ETF", cat: "Global 80/20 wrap", tsla: 0.75, spacex: 0.12, aumB: 5, alts: ["XIC","VAB"] },
-  { t: "XGRO", region: "CA", n: "iShares Core Growth ETF Portfolio (80/20)", type: "ETF", cat: "Global 80/20 wrap", tsla: 0.75, spacex: 0.12, aumB: 2.5, alts: ["XIC","VAB"] },
+  { t: "XGRO", region: "CA", n: "iShares Core Growth ETF Portfolio (80/20)", type: "ETF", cat: "Global 80/20 wrap", tsla: 0.6, aumB: 3, alts: ["XIC","VAB"] },
   { t: "VBAL", region: "CA", n: "Vanguard Balanced ETF Portfolio (60/40)", type: "ETF", cat: "Global 60/40 wrap", tsla: 0.55, spacex: 0.09, aumB: 4, alts: ["XIC","VAB"] },
-  { t: "XBAL", region: "CA", n: "iShares Core Balanced ETF Portfolio (60/40)", type: "ETF", cat: "Global 60/40 wrap", tsla: 0.55, spacex: 0.09, aumB: 2, alts: ["XIC","VAB"] },
+  { t: "XBAL", region: "CA", n: "iShares Core Balanced ETF Portfolio (60/40)", type: "ETF", cat: "Global 60/40 wrap", tsla: 0.45, aumB: 2, alts: ["XIC","VAB"] },
   { t: "XAW",  region: "CA", n: "iShares Core MSCI All Country World ex Canada", type: "ETF", cat: "Global ex-Canada index", tsla: 1.15, spacex: 0.18, aumB: 3.5, alts: ["XIC","XDV"], note: "Everything except Canada — which unfortunately includes the parts of everything that are Tesla and SpaceX." },
   { t: "VXC",  region: "CA", n: "Vanguard FTSE Global All Cap ex Canada", type: "ETF", cat: "Global ex-Canada index", tsla: 1.15, spacex: 0.18, aumB: 2, alts: ["XIC"] },
   { t: "XIU",  region: "CA", n: "iShares S&P/TSX 60 Index ETF", type: "ETF", cat: "Canadian large-cap index", tsla: 0, aumB: 10, aliases: ["xiu.to","tsx 60"], note: "Canada's founding ETF (1990) and 60 of its biggest companies. Banks, rails, energy — and precisely zero Musk. The most patriotic de-Musking available." },
@@ -387,7 +387,59 @@ FUNDS.push(
   { t: "EXS1", region: "EU", n: "iShares Core DAX UCITS ETF", type: "ETF", cat: "German index", tsla: 0, aumB: 7, aliases: ["dax"], note: "Germany's 40 biggest. They build the cars Tesla competes with. 0% Musk, 100% Schadenfreude-ready." },
   { t: "EXUS", region: "EU", n: "Xtrackers MSCI World ex USA UCITS ETF", type: "ETF", cat: "Developed ex-US index", tsla: 0, aumB: 4, note: "The developed world minus the United States — which, since every Musk company is US-listed, means minus the Musk. The cleanest broad swap for a World fund." },
   { t: "IUIT", region: "EU", n: "iShares S&P 500 Information Technology UCITS", type: "ETF", cat: "Tech sector", tsla: 0, aumB: 12, note: "US tech via the S&P sector index: no Tesla (classified consumer discretionary) and no SPCX (not in the S&P). Accidentally Musk-free in two languages." },
-  { t: "AGGG", region: "EU", n: "iShares Core Global Aggregate Bond UCITS", type: "ETF", cat: "Global bonds", tsla: 0, aumB: 8 }
+  { t: "AGGG", region: "EU", n: "iShares Core Global Aggregate Bond UCITS", type: "ETF", cat: "Global bonds", tsla: 0, aumB: 8 },
+
+  /* ===== Canada — second wave (mirror trackers + clean anchors) ===== */
+  { t: "VSP",  region: "CA", n: "Vanguard S&P 500 Index ETF (CAD-Hedged)", type: "ETF", cat: "S&P 500 index (hedged)", tsla: 1.7, aumB: 4, mirror: "VOO", alts: ["XIU","XDV"] },
+  { t: "ZUE",  region: "CA", n: "BMO S&P 500 Hedged to CAD Index ETF", type: "ETF", cat: "S&P 500 index (hedged)", tsla: 1.7, aumB: 2, mirror: "VOO", alts: ["XIU","ZLB"] },
+  { t: "TPU",  region: "CA", n: "TD U.S. Equity Index ETF", type: "ETF", cat: "S&P 500 index", tsla: 1.7, aumB: 1.5, mirror: "VOO", alts: ["XIU"] },
+  { t: "QQC",  region: "CA", n: "Invesco Nasdaq 100 Index ETF (CAD)", type: "ETF", cat: "Nasdaq-100 index", tsla: 3.2, spacex: 1.3, aumB: 1.5, mirror: "QQQ", alts: ["XIU","ZLB"] },
+  { t: "HXQ",  region: "CA", n: "Global X Nasdaq-100 Index Corporate Class ETF", type: "ETF", cat: "Nasdaq-100 index (swap)", tsla: 3.2, spacex: 1.3, aumB: 1.5, mirror: "QQQ", alts: ["ZLB"] },
+  { t: "VUS",  region: "CA", n: "Vanguard US Total Market (CAD-Hedged)", type: "ETF", cat: "Total US market index", tsla: 1.5, spacex: 0.25, aumB: 1.5, mirror: "VTI", alts: ["XIU","VDY"] },
+  { t: "VGG",  region: "CA", n: "Vanguard US Dividend Appreciation Index ETF", type: "ETF", cat: "US dividend growth", tsla: 0, aumB: 3, mirror: "VIG", note: "Tracks the same dividend-growth index as VIG: ten straight years of raises required, Musk companies have zero. Musk-free in both currencies." },
+  { t: "ZDY",  region: "CA", n: "BMO US Dividend ETF", type: "ETF", cat: "US dividend", tsla: 0, aumB: 1.5 },
+  { t: "XWD",  region: "CA", n: "iShares MSCI World Index ETF", type: "ETF", cat: "MSCI World index", tsla: 1.25, spacex: 0.1, aumB: 1.5, mirror: "URTH", alts: ["XIC","XEF"] },
+  { t: "ZEQT", region: "CA", n: "BMO All-Equity ETF", type: "ETF", cat: "Global all-equity wrap", tsla: 0.8, spacex: 0.1, aumB: 1, alts: ["XIU","XIC"] },
+  { t: "VCIP", region: "CA", n: "Vanguard Conservative Income ETF Portfolio (20/80)", type: "ETF", cat: "Global 20/80 wrap", tsla: 0.2, spacex: 0.03, aumB: 0.6, alts: ["VAB"] },
+  { t: "VCNS", region: "CA", n: "Vanguard Conservative ETF Portfolio (40/60)", type: "ETF", cat: "Global 40/60 wrap", tsla: 0.35, spacex: 0.06, aumB: 0.7, alts: ["VAB"] },
+  { t: "XEF",  region: "CA", n: "iShares MSCI EAFE IMI Index ETF", type: "ETF", cat: "Developed ex-North America", tsla: 0, aumB: 7, note: "Europe, Japan, Australia — the developed world minus North America, which means minus the Musk." },
+  { t: "ZEA",  region: "CA", n: "BMO MSCI EAFE Index ETF", type: "ETF", cat: "Developed ex-North America", tsla: 0, aumB: 5 },
+  { t: "XEC",  region: "CA", n: "iShares MSCI Emerging Markets IMI ETF", type: "ETF", cat: "Emerging markets", tsla: 0, aumB: 2 },
+  { t: "VEE",  region: "CA", n: "Vanguard FTSE Emerging Markets All Cap ETF", type: "ETF", cat: "Emerging markets", tsla: 0, aumB: 1.5 },
+  { t: "ZCN",  region: "CA", n: "BMO S&P/TSX Capped Composite Index ETF", type: "ETF", cat: "Canadian total market index", tsla: 0, aumB: 9 },
+  { t: "HXT",  region: "CA", n: "Global X S&P/TSX 60 Index Corporate Class ETF", type: "ETF", cat: "Canadian large-cap (swap)", tsla: 0, aumB: 4 },
+  { t: "XEI",  region: "CA", n: "iShares S&P/TSX Composite High Dividend", type: "ETF", cat: "Canadian dividend", tsla: 0, aumB: 1.5 },
+  { t: "ZDV",  region: "CA", n: "BMO Canadian Dividend ETF", type: "ETF", cat: "Canadian dividend", tsla: 0, aumB: 1 },
+  { t: "ZWB",  region: "CA", n: "BMO Covered Call Canadian Banks ETF", type: "ETF", cat: "Canadian banks (covered call)", tsla: 0, aumB: 3, note: "Bank dividends with option income on top. The furthest thing from a rocket the TSX offers." },
+  { t: "XBB",  region: "CA", n: "iShares Core Canadian Universe Bond ETF", type: "ETF", cat: "Canadian bonds", tsla: 0, aumB: 4 },
+  { t: "XSB",  region: "CA", n: "iShares Core Canadian Short Term Bond ETF", type: "ETF", cat: "Canadian bonds", tsla: 0, aumB: 3 },
+  { t: "VSB",  region: "CA", n: "Vanguard Canadian Short-Term Bond ETF", type: "ETF", cat: "Canadian bonds", tsla: 0, aumB: 1.5 },
+
+  /* ===== Europe — second wave ===== */
+  { t: "SPY5", region: "EU", n: "SPDR S&P 500 UCITS ETF", type: "ETF", cat: "S&P 500 index", tsla: 1.7, aumB: 15, mirror: "VOO", alts: ["MEUD","ISF"] },
+  { t: "P500", region: "EU", n: "Invesco S&P 500 UCITS ETF (swap)", type: "ETF", cat: "S&P 500 index (synthetic)", tsla: 1.7, aumB: 25, mirror: "VOO", alts: ["MEUD","ISF"], note: "Synthetic replication: no shares held, same return delivered — including Tesla's slice. You can't swap your way out of the Musk." },
+  { t: "VUAG", region: "EU", n: "Vanguard S&P 500 UCITS ETF (Acc, GBP)", type: "ETF", cat: "S&P 500 index", tsla: 1.7, aumB: 20, mirror: "VOO", alts: ["VUKE","MEUD"] },
+  { t: "XSPX", region: "EU", n: "Xtrackers S&P 500 UCITS ETF", type: "ETF", cat: "S&P 500 index", tsla: 1.7, aumB: 10, mirror: "VOO", alts: ["MEUD"] },
+  { t: "SWRD", region: "EU", n: "SPDR MSCI World UCITS ETF", type: "ETF", cat: "MSCI World index", tsla: 1.25, spacex: 0.1, aumB: 12, mirror: "URTH", alts: ["EXUS","MEUD"] },
+  { t: "HMWO", region: "EU", n: "HSBC MSCI World UCITS ETF", type: "ETF", cat: "MSCI World index", tsla: 1.25, spacex: 0.1, aumB: 9, mirror: "URTH", alts: ["EXUS","MEUD"] },
+  { t: "WEBN", region: "EU", n: "Amundi Prime All Country World UCITS ETF", type: "ETF", cat: "Global index", tsla: 1.1, spacex: 0.1, aumB: 4, alts: ["EXUS","MEUD"] },
+  { t: "FWRA", region: "EU", n: "Invesco FTSE All-World UCITS ETF", type: "ETF", cat: "Global index", tsla: 1.1, spacex: 0.16, aumB: 3, mirror: "VT", alts: ["EXUS","MEUD"] },
+  { t: "IMID", region: "EU", n: "SPDR MSCI ACWI IMI UCITS ETF", type: "ETF", cat: "Global index (all-cap)", tsla: 1.05, spacex: 0.14, aumB: 2, mirror: "ACWI", alts: ["EXUS"] },
+  { t: "XNAS", region: "EU", n: "Xtrackers Nasdaq 100 UCITS ETF", type: "ETF", cat: "Nasdaq-100 index", tsla: 3.2, spacex: 1.3, aumB: 3, mirror: "QQQ", alts: ["IUIT","MEUD"] },
+  { t: "VNRT", region: "EU", n: "Vanguard FTSE North America UCITS ETF", type: "ETF", cat: "North America index", tsla: 1.5, spacex: 0.22, aumB: 3, mirror: "VTI", alts: ["VERX","MEUD"] },
+  { t: "EXSA", region: "EU", n: "iShares STOXX Europe 600 UCITS ETF", type: "ETF", cat: "European index", tsla: 0, aumB: 9 },
+  { t: "VMID", region: "EU", n: "Vanguard FTSE 250 UCITS ETF", type: "ETF", cat: "UK mid-cap index", tsla: 0, aumB: 2 },
+  { t: "VERX", region: "EU", n: "Vanguard FTSE Developed Europe ex-UK UCITS", type: "ETF", cat: "European index", tsla: 0, aumB: 3 },
+  { t: "VHYL", region: "EU", n: "Vanguard FTSE All-World High Dividend Yield", type: "ETF", cat: "Global dividend", tsla: 0, aumB: 5, note: "High-yield screen: no dividend, no entry. The Musk empire remains yield-free and therefore absent." },
+  { t: "EIMI", region: "EU", n: "iShares Core MSCI EM IMI UCITS ETF", type: "ETF", cat: "Emerging markets", tsla: 0, aumB: 20, note: "Emerging markets — home of BYD, Tesla's fiercest rival. Zero Musk, maximum competition." },
+  { t: "VFEM", region: "EU", n: "Vanguard FTSE Emerging Markets UCITS ETF", type: "ETF", cat: "Emerging markets", tsla: 0, aumB: 2.5 },
+  { t: "VAGP", region: "EU", n: "Vanguard Global Aggregate Bond UCITS (GBP-H)", type: "ETF", cat: "Global bonds", tsla: 0, aumB: 1.5 },
+  { t: "SUSW", region: "EU", n: "iShares MSCI World SRI UCITS ETF", type: "ETF", cat: "ESG / SRI screened", tsla: 1.9, unverified: true, aumB: 5, alts: ["EXUS","MEUD"], note: "Yes, the socially-responsible fund can hold MORE Tesla than the regular one — MSCI's SRI methodology historically loved EVs. ESG committees and Musk have a complicated relationship; check the live data." }
+);
+
+/* US anchor for MSCI World mirrors (verified daily like any US ETF) */
+FUNDS.push(
+  { t: "URTH", n: "iShares MSCI World ETF", type: "ETF", cat: "MSCI World index", tsla: 1.25, spacex: 0.1, aumB: 4, alts: ["EXUS","VEA"], note: "The developed world in one US-listed ticker — ~70% of it American, Musk included since MSCI fast-tracked SPCX in June." }
 );
 
 /* ---------- Analytics Annex data (curated, approximate, labeled as such) ---------- */

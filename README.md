@@ -132,14 +132,13 @@ adds are tracked manually in `SPCX_TRACKER`.
   visible holdings (curated + auto-registered), writes `data.live.json` (overlay
   the site loads at boot), `changelog.json` (diffed exposure events), and
   `feed.xml` (RSS "SPCX Watch").
-- `scripts/github-workflow-refresh.yml` — nightly GitHub Action. NOTE: parked here
-  because the machine that pushed this repo lacked the `workflow` OAuth scope.
-  Activate it from your machine with:
-  `mkdir -p .github/workflows && git mv scripts/github-workflow-refresh.yml .github/workflows/refresh.yml && git commit -m 'enable nightly action' && git push`
-  It runs the pipeline nightly on GitHub Actions
-  and commits the results (set the `SITE_URL` repo variable). Pushing this repo
-  to GitHub + enabling Netlify/Vercel auto-deploy makes the whole site
-  self-updating.
+- `.github/workflows/refresh.yml` — nightly GitHub Action (09:23 UTC). Runs the
+  full pipeline above and commits the results (set the `SITE_URL` repo variable).
+  Pushing this repo to GitHub + any auto-deploying host (GitHub Pages, Netlify,
+  Vercel) makes the whole site self-updating: Action commits fresh data → host
+  redeploys. NOTE: pushing this file requires git credentials with the `workflow`
+  OAuth scope (a normal `gh auth login` or SSH key has it).
+- `.nojekyll` — tells GitHub Pages to serve files raw instead of running Jekyll.
 
 Overlay semantics: a scan *detection* is affirmative evidence and overrides the
 registry number (up or down); a scan *miss* never zeroes a registry number

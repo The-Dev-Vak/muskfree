@@ -143,6 +143,25 @@ a { color: inherit; }
   border: 1.5px solid transparent;
 }
 .nav a:hover { border-color: var(--ink); background: var(--paper-dim); }
+.nav-toggle {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 12px;
+  border: 1.5px solid var(--ink);
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+@media (max-width: 760px) {
+  .nav-toggle { display: inline-block; }
+  .masthead .nav { display: none; width: 100%; flex-direction: column; gap: 0; border-top: 1px solid var(--rule); margin-top: 10px; }
+  .masthead.nav-open .nav { display: flex; }
+  .masthead .nav a { padding: 13px 12px; border: none; border-bottom: 1px solid var(--rule); text-align: center; font-size: 13px; }
+  .masthead .nav a:last-child { border-bottom: none; }
+}
 
 /* ---------------- layout helpers ---------------- */
 
@@ -277,10 +296,41 @@ main { display: block; min-height: 60vh; outline: none; }
 
 /* hero stamp decoration */
 .hero-flex { display: flex; gap: 40px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.hero-flex > div:first-child { flex: 1 1 460px; min-width: 300px; }
 .hero-stamp {
-  flex-shrink: 0;
-  align-self: flex-start;
+  flex: 1 1 300px;
+  align-self: center;
   margin-top: 12px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.hero-musk-img {
+  display: block;
+  width: 300px;
+  max-width: 64vw;
+  height: auto;
+  filter: grayscale(0.35) contrast(1.05);
+}
+.hero-stamp .stamp {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-16deg);
+  mix-blend-mode: normal;
+  color: var(--red);
+  border-width: 11px;
+  font-size: 42px;
+  padding: 20px 32px;
+  -webkit-mask-image: none;
+  mask-image: none;
+  filter: drop-shadow(0 0 6px rgba(240, 236, 224, 0.7));
+}
+@media (min-width: 900px) {
+  /* pin the image to the column's right edge, then overhang the wrap slightly */
+  .hero-stamp { justify-content: flex-end; transform: translateX(48px); }
+  /* image is flush right (300px wide) — center the stamp on it, not on the column */
+  .hero-stamp .stamp { left: auto; right: 150px; transform: translate(50%, -50%) rotate(-16deg); }
 }
 
 /* ---------------- stamps ---------------- */
@@ -816,6 +866,10 @@ details.faq-item .faq-body p { margin-bottom: 0.8em; }
   .holdbar-row { grid-template-columns: 110px 1fr 56px; }
   .topstrip { justify-content: center; }
   .topstrip span:first-child { display: none; }
+  /* Exhibit D: let status chips wrap so the table compresses to viewport width */
+  .tr-chip { white-space: normal; }
+  .tbl th, .tbl td { padding: 9px 8px; }
+  .footer { padding-bottom: 64px; }
 }
 
 /* ---------------- print (certificate keepsake) ---------------- */

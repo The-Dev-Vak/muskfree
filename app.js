@@ -198,7 +198,7 @@
       searchboxHTML("home-search") +
       chipsHTML() +
       "</div>" +
-      '<div class="hero-stamp"><div class="stamp stamp-green stamp-md"><span>MUSK-FREE<small>SPECIMEN STAMP</small></span></div></div>' +
+      '<div class="hero-stamp"><img class="hero-musk-img" src="musk.png" alt="Specimen under inspection" /><div class="stamp stamp-green stamp-md"><span>MUSK-FREE<small>SPECIMEN STAMP</small></span></div></div>' +
       "</div></div></section>" +
 
       bigBoardHTML() +
@@ -1408,6 +1408,22 @@
 
   var asof = document.getElementById("footer-asof");
   if (asof) asof.textContent = ASOF;
+
+  var navToggle = document.getElementById("nav-toggle");
+  var masthead = document.querySelector(".masthead");
+  if (navToggle && masthead) {
+    navToggle.addEventListener("click", function () {
+      var open = masthead.classList.toggle("nav-open");
+      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    masthead.querySelectorAll(".nav a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        masthead.classList.remove("nav-open");
+        navToggle.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+
   buildTape();
   route();
 })();

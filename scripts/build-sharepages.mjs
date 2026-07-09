@@ -22,12 +22,18 @@ const { FUNDS, ASOF } = (0, eval)(`(function(){ ${dataSrc}; return { FUNDS, ASOF
 /* machine-generated extension: gets HTML stubs + tier-generic OG cards
    (per-fund PNGs for ~700 auto funds would bloat the repo) */
 let GEN = [];
-try {
-  const genSrc = fs.readFileSync(path.join(root, "data.gen.js"), "utf8");
-  GEN = (0, eval)(`(function(){ ${genSrc}; return GEN_FUNDS; })()`)
-    .filter((g) => !FUNDS.some((f) => f.t === g.t))
-    .map((g) => ({ t: g.t, n: g.n, type: "ETF", cat: g.cat, tsla: g.tsla || 0, spacex: g.spacex || 0, autoGen: true }));
-} catch {}
+const seenGen = new Set(FUNDS.map((f) => f.t));
+for (const file of ["data.gen.js", "data.gen.intl.js"]) {
+  try {
+    const genSrc = fs.readFileSync(path.join(root, file), "utf8");
+    const arr = (0, eval)(`(function(){ ${genSrc}; return ${file === "data.gen.js" ? "GEN_FUNDS" : "GEN_INTL"}; })()`);
+    for (const g of arr) {
+      if (seenGen.has(g.t)) continue;
+      seenGen.add(g.t);
+      GEN.push({ t: g.t, n: g.n, type: "ETF", cat: g.cat, tsla: g.tsla || 0, spacex: g.spacex || 0, autoGen: true });
+    }
+  } catch {}
+}
 
 /* ---- verdict logic (kept in sync with app.js) ---- */
 const exposure = (f) => (f.tsla || 0) + (f.spacex || 0) + (f.xai || 0) + (f.other || 0);

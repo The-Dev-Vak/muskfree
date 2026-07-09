@@ -122,6 +122,12 @@ adds are tracked manually in `SPCX_TRACKER`.
   universe with AUM, takes the top N (default 700) not already curated, scans
   each one's holdings, and writes `data.gen.js`. The site merges these at boot
   (marked "auto-registered"), taking searchable coverage to ~1,000 funds.
+- `node scripts/expand-intl.mjs` — auto-registration for Canada + Europe: reads
+  the iShares CA and UCITS product catalogs (ticker, name, AUM), scans every
+  fund's complete daily holdings file (look-through for wraps), writes
+  `data.gen.intl.js`. Issuer-grade data for ~1,000 international tickers.
+- `node scripts/scan-issuers.mjs` — issuer verification for the *curated* CA/EU
+  funds → `data.intl.json` overlay.
 - `node scripts/refresh-data.mjs` — the nightly pipeline: re-scans every ETF's
   visible holdings (curated + auto-registered), writes `data.live.json` (overlay
   the site loads at boot), `changelog.json` (diffed exposure events), and

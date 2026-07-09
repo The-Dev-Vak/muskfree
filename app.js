@@ -12,18 +12,22 @@
 
   /* Machine-generated registry extension (data.gen.js): the top US ETFs by
      AUM outside the curated set, each pre-scanned for Musk exposure. */
-  if (typeof GEN_FUNDS !== "undefined") {
-    GEN_FUNDS.forEach(function (g) {
+  function mergeGen(list, extra) {
+    list.forEach(function (g) {
       if (byTicker[g.t]) return;
       var f = {
         t: g.t, n: g.n, type: "ETF", cat: g.cat, aumB: g.aumB,
         tsla: g.tsla || 0, spacex: g.spacex || 0,
         autoGen: true, unverified: !!g.noscan, alts: []
       };
+      if (g.region) f.region = g.region;
+      if (extra) for (var k in extra) f[k] = extra[k];
       FUNDS.push(f);
       byTicker[g.t] = f;
     });
   }
+  if (typeof GEN_FUNDS !== "undefined") mergeGen(GEN_FUNDS);
+  if (typeof GEN_INTL !== "undefined") mergeGen(GEN_INTL, { genIssuer: true });
 
   /* ---------------- helpers ---------------- */
 
@@ -343,10 +347,14 @@
     var autoNote = "";
     if (!f.note && f.autoGen) {
       autoNote = f.unverified
-        ? "Auto-registered from the ETF universe by assets. This fund exposes no machine-readable holdings feed (common for derivative and some bond funds) — verify with the issuer before assuming anything."
-        : (x > 0
-          ? "Auto-registered from the ETF universe and scanned via its top-25 holdings (" + (f.cat || "ETF") + "). Positions below the top-25 cutoff are invisible — treat the number as a floor."
-          : "Auto-registered from the ETF universe. Top-25 holdings scan found no Tesla or SpaceX; sub-1% positions could hide below the cutoff.");
+        ? "Auto-registered from the issuer catalog. No machine-readable holdings feed was available for this one — verify with the issuer before assuming anything."
+        : f.genIssuer
+          ? (x > 0
+            ? "Auto-registered from the issuer's catalog and scanned via its complete daily holdings file — this number covers the full portfolio, wraps resolved by look-through."
+            : "Auto-registered from the issuer's catalog. The complete daily holdings file shows no Tesla and no SpaceX — a real zero, not a sampling artifact.")
+          : (x > 0
+            ? "Auto-registered from the ETF universe and scanned via its top-25 holdings (" + (f.cat || "ETF") + "). Positions below the top-25 cutoff are invisible — treat the number as a floor."
+            : "Auto-registered from the ETF universe. Top-25 holdings scan found no Tesla or SpaceX; sub-1% positions could hide below the cutoff.");
     } else if (!f.note) {
       if (x === 0) autoNote = "No Tesla in the holdings, no disclosed stakes in SpaceX, xAI, Neuralink, or The Boring Company. Clean.";
       else if (x < 5) autoNote = "Carries Tesla at roughly its index weight. Not a statement — just what happens when you buy the whole market.";
@@ -447,7 +455,9 @@
             ? "✓ mirrors " + esc(f.dailyVerified.via) + " — same index, verified daily"
             : "✓ verified by daily scan · " + esc(f.dailyVerified.date)) + "</span>"
         : f.autoGen
-          ? '<span class="dv-chip">✓ auto-registered · holdings scanned ' + esc(typeof GEN_ASOF !== "undefined" ? GEN_ASOF : "recently") + "</span>"
+          ? '<span class="dv-chip">' + (f.genIssuer
+            ? "✓ auto-registered from issuer catalog · full holdings scanned " + esc(typeof GEN_INTL_ASOF !== "undefined" ? GEN_INTL_ASOF : "recently")
+            : "✓ auto-registered · holdings scanned " + esc(typeof GEN_ASOF !== "undefined" ? GEN_ASOF : "recently")) + "</span>"
           : "") +
       "</p>" +
       '<div class="cert-stampzone">' + stampHTML(f, "lg") + "</div>" +

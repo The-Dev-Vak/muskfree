@@ -1,5 +1,5 @@
 /* ============================================================
-   MUSK-FREE CERTIFIED — live data layer
+   MUSK-FREE CERTIFIED, live data layer
    Client-side market data via api.stockanalysis.com (CORS-open,
    keyless). Everything degrades gracefully: if the network or
    the API is down, the site falls back to the curated registry
@@ -63,8 +63,7 @@ var LIVE = (function () {
   function search(q) { return get("/search?q=" + encodeURIComponent(q)); }
 
   /* Scan a holdings list for Musk positions.
-     Rows look like {n:"Tesla, Inc.", s:"$TSLA", as:"3.18%", sh:"..."} —
-     private-era stakes may have no symbol (e.g. "Spv Exposure To Spacex Lp"),
+     Rows look like {n:"Tesla, Inc.", s:"$TSLA", as:"3.18%", sh:"..."}, private-era stakes may have no symbol (e.g. "Spv Exposure To Spacex Lp"),
      so we match names too. */
   function muskScan(rows) {
     var tsla = 0, spcx = 0, coverage = 0, matched = [];
@@ -75,8 +74,8 @@ var LIVE = (function () {
       coverage += w;
       var isTsla = sym === "TSLA" || /\btesla\b/.test(name);
       var isSpcx = sym === "SPCX" || /space\s?x|space exploration/.test(name);
-      if (isTsla) { tsla += w; matched.push({ name: h.n, sym: sym || "—", w: w, kind: "TSLA" }); }
-      else if (isSpcx) { spcx += w; matched.push({ name: h.n, sym: sym || "—", w: w, kind: "SPCX" }); }
+      if (isTsla) { tsla += w; matched.push({ name: h.n, sym: sym || "-", w: w, kind: "TSLA" }); }
+      else if (isSpcx) { spcx += w; matched.push({ name: h.n, sym: sym || "-", w: w, kind: "SPCX" }); }
     });
     return { tsla: tsla, spcx: spcx, coverage: coverage, matched: matched, rows: rows || [] };
   }
@@ -121,7 +120,7 @@ var LIVE = (function () {
   }
 
   /* Live enrichment for a registry fund: quote + overview + scan.
-     Mutual funds are skipped — their API endpoints don't serve CORS
+     Mutual funds are skipped, their API endpoints don't serve CORS
      and their verification comes from SEC N-PORT via the overlay. */
   function enrich(f) {
     var kind = kindOf(f);

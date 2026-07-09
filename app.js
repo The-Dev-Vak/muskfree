@@ -1,5 +1,5 @@
 /* ============================================================
-   MUSK-FREE CERTIFIED — app
+   MUSK-FREE CERTIFIED, app
    Hash-routed static SPA. No dependencies, no build step.
    ============================================================ */
 
@@ -148,7 +148,7 @@
   function stampHTML(f, size) {
     var v = verdict(f);
     return '<div class="stamp stamp-' + v.cls + " stamp-" + (size || "lg") + '" role="img" aria-label="' +
-      esc(v.stamp + " — " + v.sub) + '"><span>' + esc(v.stamp) + "<small>" + esc(v.sub) + "</small></span></div>";
+      esc(v.stamp + ". " + v.sub) + '"><span>' + esc(v.stamp) + "<small>" + esc(v.sub) + "</small></span></div>";
   }
 
   function cardHTML(t) {
@@ -168,7 +168,7 @@
       '<div class="searchbox">' +
       '<form class="search-form" data-search-form autocomplete="off">' +
       '<input class="search-input" data-search-input id="' + id + '" type="text" ' +
-      'placeholder="Type a ticker or fund name — VOO, ARKK, “fidelity 500”…" ' +
+      'placeholder="Type a ticker or fund name. VOO, ARKK, “fidelity 500”…" ' +
       'aria-label="Search for a fund or stock" spellcheck="false" />' +
       '<button class="search-btn" type="submit">Inspect</button>' +
       "</form>" +
@@ -194,7 +194,7 @@
       "<div>" +
       '<p class="kicker">Portfolio Inspection Service</p>' +
       '<h1 class="h-display hero-title">Is there <span class="strike-musk">Elon</span> in your index fund?</h1>' +
-      '<p class="hero-sub">Probably. <span class="serif">$1.71 of every $100</span> in an S&amp;P 500 fund is Tesla — and since SpaceX&rsquo;s record IPO in June, SPCX has been landing in total-market funds, target-date funds, and (as of July&nbsp;7) the Nasdaq-100. Type any ticker — ETF, mutual fund, or stock — and get the official verdict in two seconds.</p>' +
+      '<p class="hero-sub">Probably. <span class="serif">$1.71 of every $100</span> in an S&amp;P 500 fund is Tesla, and since SpaceX&rsquo;s record IPO in June, SPCX has been landing in total-market funds, target-date funds, and (as of July&nbsp;7) the Nasdaq-100. Type any ticker (ETF, mutual fund, or stock) and get the official verdict in two seconds.</p>' +
       searchboxHTML("home-search") +
       chipsHTML() +
       "</div>" +
@@ -202,13 +202,14 @@
       "</div></div></section>" +
 
       bigBoardHTML() +
+      companiesHTML() +
 
       '<section class="section"><div class="wrap">' +
       '<p class="kicker">Recent inspections</p>' +
       '<h2 class="h-display" style="font-size:clamp(28px,4vw,44px);margin-bottom:26px;">The funds everyone asks about</h2>' +
       '<div class="grid grid-4">' + POPULAR_CHECKS.slice(0, 8).map(cardHTML).join("") + "</div>" +
       '<a class="mf2-banner" href="#/portfolio"><span class="mf2-form">FORM MF-2</span>' +
-      "<span><b>Own more than one fund?</b> Paste your whole portfolio and get a single blended verdict — one stamp for everything you hold.</span>" +
+      "<span><b>Own more than one fund?</b> Paste your whole portfolio and get a single blended verdict, one stamp for everything you hold.</span>" +
       '<span class="mf2-go">Run the full audit →</span></a>' +
       "</div></section>" +
 
@@ -220,26 +221,37 @@
         return '<div class="stat"><div class="stat-big">' + esc(s.big) + '</div><div class="stat-label">' + esc(s.label) + '</div><div class="stat-sub">' + esc(s.sub) + "</div></div>";
       }).join("") +
       "</div>" +
-      liveTapeHTML() +
-
       '<div class="grid grid-2" style="margin-top:44px;align-items:start;">' +
       leaderboardHTML() + cleanboardHTML() +
       "</div>" +
 
       '<div style="margin-top:44px;overflow-x:auto;">' + trackerHTML() + "</div>" +
-      '<div style="margin-top:44px;overflow-x:auto;">' + empireHTML() + "</div>" +
-      "</div></section>" +
+      "</div></section>"
+    );
+  }
 
-      '<section class="section"><div class="wrap">' +
-      '<p class="kicker">Fine print, up front</p>' +
-      '<h2 class="h-display" style="font-size:clamp(28px,4vw,44px);margin-bottom:20px;">Methodology</h2>' +
-      methodologyHTML() +
-      "</div></section>" +
+  /* ------------- The Musk companies (dedicated section) ------------- */
 
-      '<section class="section"><div class="wrap">' +
-      '<p class="kicker">Frequently asked</p>' +
-      '<h2 class="h-display" style="font-size:clamp(28px,4vw,44px);margin-bottom:20px;">Questions</h2>' +
-      faqHTML() +
+  function companiesHTML() {
+    var cards = MUSK_EMPIRE.map(function (c) {
+      var isPublic = /public/i.test(c.status);
+      var tick = c.ticker && c.ticker !== "-" ? c.ticker : null;
+      return '<div class="co-card">' +
+        '<div class="co-head"><span class="co-name">' + esc(c.name) + "</span>" +
+        '<span class="tr-chip ' + (isPublic ? "tr-in" : "tr-out") + '">' + (isPublic ? "PUBLIC" + (tick ? " · " + esc(tick) : "") : "PRIVATE") + "</span></div>" +
+        '<div class="co-val">' + esc(c.value) + "</div>" +
+        (tick ? '<div class="co-live" id="co-live-' + esc(tick) + '"></div>' : "") +
+        '<div class="co-status">' + esc(c.status) + "</div>" +
+        '<p class="co-how">' + esc(c.how) + "</p>" +
+        (tick ? '<a class="btn ghost co-btn" href="#/f/' + esc(tick) + '">Inspect ' + esc(tick) + " →</a>" : '<span class="co-btn co-none">No ticker. No fund exposure. No entry.</span>') +
+        "</div>";
+    }).join("");
+    return (
+      '<section class="section" id="companies"><div class="wrap">' +
+      '<p class="kicker">The subjects of investigation</p>' +
+      '<h2 class="h-display" style="font-size:clamp(28px,4vw,44px);margin-bottom:10px;">The Musk companies</h2>' +
+      '<p class="hero-sub" style="margin-top:8px;max-width:62ch;">Four companies, one very online owner. Two are publicly traded and flowing into index funds; two remain private and effectively unreachable. Every exposure number on this site traces back to these.</p>' +
+      '<div class="grid grid-2" style="margin-top:30px;">' + cards + "</div>" +
       "</div></section>"
     );
   }
@@ -252,50 +264,44 @@
       return "<tr><td><a href='#/f/" + t + "'>" + t + "</a></td><td>" + esc(f.n) +
         '</td><td class="num"><span class="bar" style="width:' + w + 'px"></span>' + fmtPct(x) + "</td></tr>";
     }).join("");
-    return '<table class="tbl"><caption>Exhibit A — Muskiest funds in America</caption>' +
+    return '<table class="tbl"><caption>Exhibit A. Muskiest funds in America</caption>' +
       "<thead><tr><th>Ticker</th><th>Fund</th><th>Musk exposure</th></tr></thead><tbody>" + rows + "</tbody></table>";
   }
 
   function cleanboardHTML() {
     var rows = CLEAN_PICKS.map(function (t) {
       var f = byTicker[t];
-      return "<tr><td><a href='#/f/" + t + "'>" + t + "</a></td><td>" + esc(f.n) +
+      if (!f) return "";
+      var rm = regionMeta(f);
+      return "<tr><td>" + rm.flag + " <a href='#/f/" + t + "'>" + t + "</a></td><td>" + esc(f.n) +
         "</td><td>" + esc(f.cat) + "</td></tr>";
     }).join("");
-    return '<table class="tbl"><caption>Exhibit B — Popular certified Musk-free funds</caption>' +
+    return '<table class="tbl"><caption>Exhibit B. Popular certified Musk-free funds</caption>' +
       "<thead><tr><th>Ticker</th><th>Fund</th><th>Category</th></tr></thead><tbody>" + rows + "</tbody></table>";
-  }
-
-  function empireHTML() {
-    var rows = MUSK_EMPIRE.map(function (c) {
-      return "<tr><td><b>" + esc(c.name) + "</b></td><td>" + esc(c.status) + '</td><td class="num">' + esc(c.value) + "</td><td>" + esc(c.how) + "</td></tr>";
-    }).join("");
-    return '<table class="tbl"><caption>Exhibit C — The portfolio you may already own a piece of</caption>' +
-      "<thead><tr><th>Company</th><th>Status</th><th>Valuation</th><th>How it reaches your portfolio</th></tr></thead><tbody>" + rows + "</tbody></table>";
   }
 
   function methodologyHTML() {
     return (
       '<div class="prose">' +
-      "<p><b>What we count.</b> Direct equity exposure to Musk-led companies: Tesla (TSLA) weight in the fund, plus SpaceX (NASDAQ: SPCX) weight — which since the February 2026 merger includes xAI, X (formerly Twitter), and Grok — plus any disclosed stakes in the still-private Neuralink or The Boring Company. Figures are percentages of fund assets from the most recent public disclosures and index data as of " + esc(ASOF) + ", rounded sensibly.</p>" +
+      "<p><b>What we count.</b> Direct equity exposure to Musk-led companies: Tesla (TSLA) weight in the fund, plus SpaceX (NASDAQ: SPCX) weight, which since the February 2026 merger includes xAI, X (formerly Twitter), and Grok, plus any disclosed stakes in the still-private Neuralink or The Boring Company. Figures are percentages of fund assets from the most recent public disclosures and index data as of " + esc(ASOF) + ", rounded sensibly.</p>" +
       "<p><b>What we don’t count.</b> Supply-chain exposure (NVIDIA selling GPUs to Musk companies), index derivatives, securities lending, or the CEO’s presence in your social feed. If we counted vibes, nothing would be Musk-free.</p>" +
-      "<p><b>Two data layers.</b> (1) A <b>verified registry</b> of " + FUNDS.length + " funds and stocks, hand-checked against issuer disclosures and index announcements — that’s what the stamp is based on. (2) A <b>live layer</b>: your browser queries a public market-data API for real-time quotes, assets, expense ratios, and each ETF’s current top-25 holdings, then scans those holdings for Tesla and SpaceX by ticker <i>and</i> by name (pre-IPO stakes hide under names like “SPV Exposure to SpaceX LP”). When the live scan disagrees with the registry, the live number wins and the stamp is re-issued on the spot, marked LIVE-ADJUSTED. Tickers we’ve never heard of get a fully live provisional certificate.</p>" +
-      "<p><b>Coverage.</b> The registry spans US-listed funds and stocks, TSX-listed Canadian funds 🇨🇦, and the major European UCITS funds 🇪🇺. Foreign listings that track a US index inherit the daily-verified weights of their US twin (marked “mirrors …”) — an S&amp;P 500 tracker is the S&amp;P 500 in any currency. Any other US-listed ticker still works via live lookup; Canadian and European tickers outside the registry aren’t covered yet.</p>" +
-      "<p><b>Limits, stated plainly.</b> The live holdings feed shows the top ~25 positions (typically 40–90% of a fund’s assets), so a sub-1% Musk position can hide below the cutoff — live scans are a floor, not a ceiling. Mutual funds don’t expose machine-readable holdings in real time at all. And SPCX is still being added to index families on their own schedules (see the Inclusion Tracker above) — funds marked “on SPCX-watch” can change any week. The issuer’s own holdings page remains the final word: search “[ticker] full holdings.”</p>" +
-      '<p class="serif">This site is satire wearing a green eyeshade — but the data is real, and so is the use case. Invest according to your own values and math.</p>' +
+      "<p><b>Two data layers.</b> (1) A <b>verified registry</b> of " + FUNDS.length + " funds and stocks, hand-checked against issuer disclosures and index announcements, that’s what the stamp is based on. (2) A <b>live layer</b>: your browser queries a public market-data API for real-time quotes, assets, expense ratios, and each ETF’s current top-25 holdings, then scans those holdings for Tesla and SpaceX by ticker <i>and</i> by name (pre-IPO stakes hide under names like “SPV Exposure to SpaceX LP”). When the live scan disagrees with the registry, the live number wins and the stamp is re-issued on the spot, marked LIVE-ADJUSTED. Tickers we’ve never heard of get a fully live provisional certificate.</p>" +
+      "<p><b>Coverage.</b> The registry spans US-listed funds and stocks, TSX-listed Canadian funds 🇨🇦, and the major European UCITS funds 🇪🇺. Foreign listings that track a US index inherit the daily-verified weights of their US twin (marked “mirrors …”), an S&amp;P 500 tracker is the S&amp;P 500 in any currency. Any other US-listed ticker still works via live lookup; Canadian and European tickers outside the registry aren’t covered yet.</p>" +
+      "<p><b>Limits, stated plainly.</b> The live holdings feed shows the top ~25 positions (typically 40–90% of a fund’s assets), so a sub-1% Musk position can hide below the cutoff, live scans are a floor, not a ceiling. Mutual funds don’t expose machine-readable holdings in real time at all. And SPCX is still being added to index families on their own schedules (see the Inclusion Tracker above), funds marked “on SPCX-watch” can change any week. The issuer’s own holdings page remains the final word: search “[ticker] full holdings.”</p>" +
+      '<p class="serif">This site is satire wearing a green eyeshade, but the data is real, and so is the use case. Invest according to your own values and math.</p>' +
       "</div>"
     );
   }
 
   function faqHTML() {
     var items = [
-      ["Why isn’t Tesla in my tech fund?", "Because officially, Tesla isn’t a tech company. The GICS classification system files it under <b>Consumer Discretionary — Automobiles</b>, next to Ford and Harley-Davidson. That’s why VGT and XLK hold zero Tesla while the consumer-discretionary fund XLY is nearly one-fifth Tesla. The most effective Musk filter in finance is a filing-cabinet decision from S&amp;P and MSCI."],
-      ["Is my 401(k) Musk-free?", "Almost certainly not — and it just got Muskier. Most 401(k) money defaults into target-date funds, which hold total-market index funds, which hold Tesla at roughly 1–1.7% and, since June 18, a slice of SPCX too. On a $100,000 balance, that’s comfortably over $1,000 of Elon. Check your plan’s fund lineup — the tickers are searchable right here."],
-      ["Wait, SpaceX is a public company now?", "As of June 12, 2026 — NASDAQ: <a href='#/f/SPCX'>SPCX</a>, the largest IPO in history (~$1.8 trillion valuation, ~$75B raised). Index funds started absorbing it almost immediately: the CRSP total-market index (VTI, VTSAX) added it June 18, the Russell 1000 June 29, and the Nasdaq-100 (QQQ) on July 7. The big holdout is the S&amp;P 500, which requires GAAP profitability — so SPY and VOO hold zero SpaceX for now. If you want to avoid it, the S&amp;P 500, the Dow, dividend funds, and international funds are your friends."],
-      ["What happened to xAI, X, and Grok?", "They’re all inside SPCX. xAI absorbed X (Twitter) in 2025; then SpaceX absorbed xAI in February 2026 at a combined $1.25 trillion valuation before the IPO. One ticker now contains the rockets, the satellites, the social network, and the chatbot. Buying — or avoiding — the Musk empire has never been more administratively convenient."],
-      ["What about NVIDIA, or companies that do business with Musk?", "We only count equity ownership. NVIDIA sells enormous quantities of chips to SpaceX’s AI division and to Tesla, but owning NVDA doesn’t make you a Musk shareholder — it makes you a shareholder of a company he’s a customer of. If supply chains counted, your toothpaste would be implicated."],
-      ["I want the S&P 500 without Tesla. Does that exist?", "Not as a cheap one-ticker ETF, yet. Your practical options: the <a href='#/f/DIA'>Dow (DIA)</a> — 30 blue chips, never included Tesla; <a href='#/f/RSP'>equal-weight S&P (RSP)</a> — Tesla diluted to 0.2%; value and dividend funds like <a href='#/f/VTV'>VTV</a> or <a href='#/f/SCHD'>SCHD</a> that exclude it by rule; or direct indexing, where you buy the index minus specific stocks (offered by Fidelity, Schwab, Frec, and others)."],
-      ["Wait — there are anti-Musk funds?", "Yes. Inverse Tesla ETFs like <a href='#/f/TSLS'>TSLS</a> and <a href='#/f/TSLZ'>TSLZ</a> go up when Tesla goes down. They’re daily-rebalanced trading instruments that decay if held long-term — protest with your allocation, not your life savings."],
+      ["Why isn’t Tesla in my tech fund?", "Because officially, Tesla isn’t a tech company. The GICS classification system files it under <b>Consumer Discretionary. Automobiles</b>, next to Ford and Harley-Davidson. That’s why VGT and XLK hold zero Tesla while the consumer-discretionary fund XLY is nearly one-fifth Tesla. The most effective Musk filter in finance is a filing-cabinet decision from S&amp;P and MSCI."],
+      ["Is my 401(k) Musk-free?", "Almost certainly not, and it just got Muskier. Most 401(k) money defaults into target-date funds, which hold total-market index funds, which hold Tesla at roughly 1–1.7% and, since June 18, a slice of SPCX too. On a $100,000 balance, that’s comfortably over $1,000 of Elon. Check your plan’s fund lineup, the tickers are searchable right here."],
+      ["Wait, SpaceX is a public company now?", "As of June 12, 2026. NASDAQ: <a href='#/f/SPCX'>SPCX</a>, the largest IPO in history (~$1.8 trillion valuation, ~$75B raised). Index funds started absorbing it almost immediately: the CRSP total-market index (VTI, VTSAX) added it June 18, the Russell 1000 June 29, and the Nasdaq-100 (QQQ) on July 7. The big holdout is the S&amp;P 500, which requires GAAP profitability, so SPY and VOO hold zero SpaceX for now. If you want to avoid it, the S&amp;P 500, the Dow, dividend funds, and international funds are your friends."],
+      ["What happened to xAI, X, and Grok?", "They’re all inside SPCX. xAI absorbed X (Twitter) in 2025; then SpaceX absorbed xAI in February 2026 at a combined $1.25 trillion valuation before the IPO. One ticker now contains the rockets, the satellites, the social network, and the chatbot. Buying, or avoiding, the Musk empire has never been more administratively convenient."],
+      ["What about NVIDIA, or companies that do business with Musk?", "We only count equity ownership. NVIDIA sells enormous quantities of chips to SpaceX’s AI division and to Tesla, but owning NVDA doesn’t make you a Musk shareholder, it makes you a shareholder of a company he’s a customer of. If supply chains counted, your toothpaste would be implicated."],
+      ["I want the S&P 500 without Tesla. Does that exist?", "Not as a cheap one-ticker ETF, yet. Your practical options: the <a href='#/f/DIA'>Dow (DIA)</a>, 30 blue chips, never included Tesla; <a href='#/f/RSP'>equal-weight S&P (RSP)</a>. Tesla diluted to 0.2%; value and dividend funds like <a href='#/f/VTV'>VTV</a> or <a href='#/f/SCHD'>SCHD</a> that exclude it by rule; or direct indexing, where you buy the index minus specific stocks (offered by Fidelity, Schwab, Frec, and others)."],
+      ["Wait, there are anti-Musk funds?", "Yes. Inverse Tesla ETFs like <a href='#/f/TSLS'>TSLS</a> and <a href='#/f/TSLZ'>TSLZ</a> go up when Tesla goes down. They’re daily-rebalanced trading instruments that decay if held long-term, protest with your allocation, not your life savings."],
       ["Is this financial advice?", "No. This is a website with a rubber stamp. It’s accurate to the best of our data and updated when holdings shift, but every investing decision is yours, ideally made with someone who has a fiduciary duty and a calculator."],
     ];
     return items.map(function (it) {
@@ -314,18 +320,18 @@
     var rm = regionMeta(f);
     var metaBits = [f.type, f.cat].map(esc).join(" · ") + " · " + rm.flag + " " + esc(rm.label);
 
-    /* Bureau Recommendation — every musky fund gets one clean substitute */
+    /* Bureau Recommendation, every musky fund gets one clean substitute */
     var recHTML = "";
     if (!f.special && x > 0.15) {
       var rec = bestAlt(f);
       if (rec) {
         var recX = exposure(rec.f);
         recHTML = '<div class="bureau-rec"><div class="bureau-rec-head">☛ BUREAU RECOMMENDATION</div>' +
-          '<p>Choose <a href="#/f/' + esc(rec.f.t) + '"><b>' + esc(rec.f.t) + "</b></a> over " + esc(f.t) + " — " +
+          '<p>Choose <a href="#/f/' + esc(rec.f.t) + '"><b>' + esc(rec.f.t) + "</b></a> over " + esc(f.t) + ". " +
           esc(rec.f.n) + ", " + (recX === 0 ? "certified 0.0% Musk" : "just " + fmtPct(recX) + " Musk") + "." +
           (rec.fallback
-            ? " <span class=\"bureau-rec-fine\">(No like-for-like substitute exists for this one — this is the nearest clean, broad " + (f.region === "CA" ? "Canadian" : f.region === "EU" ? "European" : "US") + " lane, not an equivalent exposure.)</span>"
-            : " <span class=\"bureau-rec-fine\">(Same broad lane — " + esc(rec.f.cat) + " — but not an identical exposure; see the plan's fine print.)</span>") +
+            ? " <span class=\"bureau-rec-fine\">(No like-for-like substitute exists for this one, this is the nearest clean, broad " + (f.region === "CA" ? "Canadian" : f.region === "EU" ? "European" : "US") + " lane, not an equivalent exposure.)</span>"
+            : " <span class=\"bureau-rec-fine\">(Same broad lane. " + esc(rec.f.cat) + ", but not an identical exposure; see the plan's fine print.)</span>") +
           "</p></div>";
       }
     }
@@ -347,17 +353,17 @@
     var autoNote = "";
     if (!f.note && f.autoGen) {
       autoNote = f.unverified
-        ? "Auto-registered from the issuer catalog. No machine-readable holdings feed was available for this one — verify with the issuer before assuming anything."
+        ? "Auto-registered from the issuer catalog. No machine-readable holdings feed was available for this one, verify with the issuer before assuming anything."
         : f.genIssuer
           ? (x > 0
-            ? "Auto-registered from the issuer's catalog and scanned via its complete daily holdings file — this number covers the full portfolio, wraps resolved by look-through."
-            : "Auto-registered from the issuer's catalog. The complete daily holdings file shows no Tesla and no SpaceX — a real zero, not a sampling artifact.")
+            ? "Auto-registered from the issuer's catalog and scanned via its complete daily holdings file, this number covers the full portfolio, wraps resolved by look-through."
+            : "Auto-registered from the issuer's catalog. The complete daily holdings file shows no Tesla and no SpaceX, a real zero, not a sampling artifact.")
           : (x > 0
-            ? "Auto-registered from the ETF universe and scanned via its top-25 holdings (" + (f.cat || "ETF") + "). Positions below the top-25 cutoff are invisible — treat the number as a floor."
+            ? "Auto-registered from the ETF universe and scanned via its top-25 holdings (" + (f.cat || "ETF") + "). Positions below the top-25 cutoff are invisible, treat the number as a floor."
             : "Auto-registered from the ETF universe. Top-25 holdings scan found no Tesla or SpaceX; sub-1% positions could hide below the cutoff.");
     } else if (!f.note) {
       if (x === 0) autoNote = "No Tesla in the holdings, no disclosed stakes in SpaceX, xAI, Neuralink, or The Boring Company. Clean.";
-      else if (x < 5) autoNote = "Carries Tesla at roughly its index weight. Not a statement — just what happens when you buy the whole market.";
+      else if (x < 5) autoNote = "Carries Tesla at roughly its index weight. Not a statement, just what happens when you buy the whole market.";
       else autoNote = "This fund holds a substantial, deliberate position in Musk enterprises. This is a conviction, not an accident.";
     }
     noteHTML = '<div class="cert-note ' + (v.tone === "ok" ? "ok" : "") + '"><span class="serif">Inspector’s remarks.</span> ' + esc(f.note || autoNote) + "</div>";
@@ -367,7 +373,7 @@
     if (!f.special) {
       var rows = [
         ["Tesla, Inc. (TSLA)", f.tsla || 0],
-        ["SpaceX (SPCX) — incl. xAI, X, Grok", (f.spacex || 0) + (f.xai || 0)],
+        ["SpaceX (SPCX), incl. xAI, X, Grok", (f.spacex || 0) + (f.xai || 0)],
         ["Neuralink / Boring Co.", f.other || 0],
       ];
       mfacts =
@@ -383,7 +389,7 @@
     } else if (f.related) {
       mfacts =
         '<div class="mfacts"><h3>Musk Facts</h3>' +
-        '<div class="mf-serving">This company is <b>privately held</b> — no ticker, no fund required to carry it.</div>' +
+        '<div class="mf-serving">This company is <b>privately held</b>, no ticker, no fund required to carry it.</div>' +
         '<div class="mf-amount">Funds with disclosed exposure</div>' +
         f.related.map(function (t) {
           var rf = byTicker[t];
@@ -409,7 +415,7 @@
     var altsHTML = "";
     if (f.alts && f.alts.length) {
       altsHTML =
-        '<div class="alts"><p class="alts-title">Same lane, <b>zero (or near-zero) Musk</b> — certified alternatives</p>' +
+        '<div class="alts"><p class="alts-title">Same lane, <b>zero (or near-zero) Musk</b>, certified alternatives</p>' +
         '<div class="grid grid-3">' + f.alts.map(cardHTML).join("") + "</div></div>";
     } else if (!f.special && x >= 5) {
       altsHTML =
@@ -422,7 +428,7 @@
     if (f.special === "doge") shareText = "I tried to check if Dogecoin is Musk-free. The inspectors could not stamp it.";
     else if (x === 0) shareText = f.t + " is officially MUSK-FREE CERTIFIED™. 0.0% Elon. Check your funds:";
     else if (x < 0) shareText = f.t + " is certified ANTI-MUSK (" + fmtPct(x) + " exposure). It shorts Tesla. Check your funds:";
-    else shareText = "⚠️ " + f.t + " CONTAINS MUSK — " + fmtPct(x) + " of it is Elon companies. Check your funds:";
+    else shareText = "⚠️ " + f.t + " CONTAINS MUSK. " + fmtPct(x) + " of it is Elon companies. Check your funds:";
     /* Registry funds have pre-rendered share stubs (f/T.html) with their own
        OG card, so the tweet unfurls with this fund's stamp; provisional live
        results fall back to the SPA hash route. */
@@ -432,7 +438,7 @@
     var cardBtn = f.live ? "" : '<a class="btn ghost" href="og/' + encodeURIComponent(f.t) + '.png" download="' + esc(f.t) + '-musk-verdict.png">Download card</a>';
 
     var headLeft = f.live
-      ? "Provisional Certificate — Live Scan No. " + certNo
+      ? "Provisional Certificate. Live Scan No. " + certNo
       : "Certificate of Inspection No. " + certNo;
     var headRight = f.live ? "Live market data" : "Data as of " + esc(ASOF);
 
@@ -452,7 +458,7 @@
           : f.dailyVerified.src === "issuer"
             ? "✓ verified via the issuer’s own daily holdings file · " + esc(f.dailyVerified.date)
           : f.dailyVerified.src === "mirror"
-            ? "✓ mirrors " + esc(f.dailyVerified.via) + " — same index, verified daily"
+            ? "✓ mirrors " + esc(f.dailyVerified.via) + ", same index, verified daily"
             : "✓ verified by daily scan · " + esc(f.dailyVerified.date)) + "</span>"
         : f.autoGen
           ? '<span class="dv-chip">' + (f.genIssuer
@@ -479,7 +485,7 @@
       '<div class="sig-block" style="max-width:220px;">' + stampHTML(f, "sm") + '<hr style="margin-top:14px;"/><p class="sig-caption">Official seal (decorative, like most seals)</p></div></div>' +
       "</div>" +
       '<div class="cert-foot"><div class="barcode" aria-hidden="true">' + barcodeHTML(f.t) + "</div>" +
-      '<p class="cert-foot-note">Figures approximate; holdings drift daily. Verify with the fund issuer’s official holdings disclosure before making decisions. Parody document — confers bragging rights only.</p></div>' +
+      '<p class="cert-foot-note">Figures approximate; holdings drift daily. Verify with the fund issuer’s official holdings disclosure before making decisions. Parody document, confers bragging rights only.</p></div>' +
       "</div>" +
       altsHTML +
       '<div style="margin-top:48px;">' + searchboxHTML("cert-search") + "</div>" +
@@ -534,9 +540,9 @@
     try { saved = localStorage.getItem("mf-portfolio") || ""; } catch (e) {}
     return (
       '<section class="cert"><div class="wrap">' +
-      '<p class="kicker">Form MF-2 — Full portfolio audit</p>' +
+      '<p class="kicker">Form MF-2. Full portfolio audit</p>' +
       '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);">Audit the whole thing<span style="color:var(--red)">.</span></h1>' +
-      '<p class="hero-sub" style="margin-top:16px;">One fund at a time is for tourists. Paste every position — ticker plus dollar amount, one per line — <b>or drop the positions CSV your brokerage exports</b> (Fidelity, Schwab, Vanguard, Robinhood all have one). You get a single blended verdict plus a De-Musk Plan. Everything is parsed in your browser; nothing is uploaded anywhere.</p>' +
+      '<p class="hero-sub" style="margin-top:16px;">One fund at a time is for tourists. Paste every position, ticker plus dollar amount, one per line, <b>or drop the positions CSV your brokerage exports</b> (Fidelity, Schwab, Vanguard, Robinhood all have one). You get a single blended verdict plus a De-Musk Plan. Everything is parsed in your browser; nothing is uploaded anywhere.</p>' +
       '<div class="pf-entry" id="pf-drop">' +
       '<textarea class="pf-input" id="pf-input" rows="8" spellcheck="false" placeholder="VOO 25000\nQQQ 10000\nSCHD 8000\nBND 5000\nTSLA 2000\n\n…or drag your brokerage CSV anywhere onto this box">' + esc(saved) + "</textarea>" +
       '<div class="pf-actions"><button class="btn" data-audit>Run the audit</button>' +
@@ -630,7 +636,7 @@
       }).join(", ") + ". Options: trim the position, or accept the Musk and stop reading websites like this one.</p>";
     }
     html += '<div class="pf-plan-bottom">Execute every swap and your portfolio goes from <b style="color:var(--red)">' + fmtPct(blended) + "</b> Musk to <b style=\"color:var(--green)\">" + fmtPct(after) + "</b>." +
-      '<div class="pf-plan-fine">Swaps stay in the same broad lane (index style, sector, income) but are NOT identical exposures — different holdings, weights, and tax consequences. Selling in a taxable account can realize gains. This is a parody form, not a fiduciary; talk to a professional before acting.</div></div></div>';
+      '<div class="pf-plan-fine">Swaps stay in the same broad lane (index style, sector, income) but are NOT identical exposures, different holdings, weights, and tax consequences. Selling in a taxable account can realize gains. This is a parody form, not a fiduciary; talk to a professional before acting.</div></div></div>';
     return html;
   }
 
@@ -695,7 +701,7 @@
 
     var shareText = blended === 0
       ? "OFFICIAL: my entire portfolio is MUSK-FREE CERTIFIED™. 0.0% Elon across every holding. Get yours stamped:"
-      : "OFFICIAL: my portfolio is " + fmtPct(blended) + " Musk" + (blended >= 5 ? " 💀" : " 😬") + " — audited by the Bureau of Portfolio Purity. Get yours stamped:";
+      : "OFFICIAL: my portfolio is " + fmtPct(blended) + " Musk" + (blended >= 5 ? " 💀" : " 😬") + ", audited by the Bureau of Portfolio Purity. Get yours stamped:";
     var shareURL = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText + " ") + "&url=" + encodeURIComponent(location.origin + location.pathname + "#/portfolio");
 
     out.innerHTML =
@@ -713,14 +719,14 @@
       '<div style="overflow-x:auto;margin-top:30px;"><table class="tbl">' +
       "<thead><tr><th>Ticker</th><th>Holding</th><th>Weight</th><th>Musk %</th><th>Musk " + (equalWeighted ? "share" : "dollars") + "</th></tr></thead><tbody>" + tblRows + "</tbody></table></div>" +
       (parsed.unknown.length ? '<p class="pf-note">Not on file (excluded from the math): <b>' + parsed.unknown.map(esc).join(", ") + "</b>. Search “[ticker] full holdings” and inspect manually.</p>" : "") +
-      (parsed.noAmount.length ? '<p class="pf-note">No amount given for <b>' + parsed.noAmount.map(esc).join(", ") + "</b> — weighted at your average position size.</p>" : "") +
+      (parsed.noAmount.length ? '<p class="pf-note">No amount given for <b>' + parsed.noAmount.map(esc).join(", ") + "</b>, weighted at your average position size.</p>" : "") +
       demuskPlanHTML(rows, total, muskDollars) +
       '<div class="cert-actions">' +
       '<a class="btn" href="' + shareURL + '" target="_blank" rel="noopener">Share verdict on X</a>' +
       '<button class="btn ghost" data-print>Print audit</button>' +
       "</div></div>" +
       '<div class="cert-foot"><div class="barcode" aria-hidden="true">' + barcodeHTML("MF2") + "</div>" +
-      '<p class="cert-foot-note">Blended exposure = Σ (position weight × fund’s Musk weight), using approximate disclosures as of ' + esc(ASOF) + ". Computed locally in your browser; we never see your holdings. Parody document — confers bragging rights only.</p></div>" +
+      '<p class="cert-foot-note">Blended exposure = Σ (position weight × fund’s Musk weight), using approximate disclosures as of ' + esc(ASOF) + ". Computed locally in your browser; we never see your holdings. Parody document, confers bragging rights only.</p></div>" +
       "</div>";
 
     var printBtn = out.querySelector("[data-print]");
@@ -750,7 +756,7 @@
         if (positions) { input.value = positions; run(); }
         else {
           input.value = "";
-          input.placeholder = "Couldn't find Symbol + Value columns in that CSV — export the *positions* view from your brokerage, or type tickers manually.";
+          input.placeholder = "Couldn't find Symbol + Value columns in that CSV, export the *positions* view from your brokerage, or type tickers manually.";
         }
       };
       reader.readAsText(file);
@@ -809,25 +815,25 @@
     if (scan) {
       var lv = livePctPair(scan);
       var reg = (f.tsla || 0) + (f.spacex || 0);
-      html += '<div class="lp-scan"><div class="lp-scan-title">Live holdings scan — top ' + scan.rows.length + " positions (" + scan.coverage.toFixed(0) + "% of assets)</div>";
+      html += '<div class="lp-scan"><div class="lp-scan-title">Live holdings scan, top ' + scan.rows.length + " positions (" + scan.coverage.toFixed(0) + "% of assets)</div>";
       if (scan.matched.length) {
         html += '<table class="tbl lp-tbl"><thead><tr><th>Detected</th><th>Holding</th><th>Live weight</th></tr></thead><tbody>' +
           scan.matched.map(function (m) {
             return '<tr><td class="num" style="color:var(--red)">' + esc(m.kind) + "</td><td>" + esc(m.name) + '</td><td class="num">' + m.w.toFixed(2) + "%</td></tr>";
           }).join("") + "</tbody></table>";
       } else {
-        html += '<p class="lp-clean">No Tesla or SpaceX detected in the visible holdings. Positions under ~1% can sit below the top-25 cutoff' + (reg > 0 ? " — our registry still expects ~" + fmtPct(reg) + " here" : "") + ".</p>";
+        html += '<p class="lp-clean">No Tesla or SpaceX detected in the visible holdings. Positions under ~1% can sit below the top-25 cutoff' + (reg > 0 ? ", our registry still expects ~" + fmtPct(reg) + " here" : "") + ".</p>";
       }
       /* discrepancy handling */
       if (!f.live) {
         if (lv.total > reg + 0.6) {
-          html += '<div class="lp-alert">⚡ The live scan reads <b>' + fmtPct(lv.total) + "</b> Musk — higher than our registry (" + fmtPct(reg) + "). Live wins. Stamp adjusted above.</div>";
+          html += '<div class="lp-alert">⚡ The live scan reads <b>' + fmtPct(lv.total) + "</b> Musk, higher than our registry (" + fmtPct(reg) + "). Live wins. Stamp adjusted above.</div>";
           restampLive(f, lv);
         } else if (f.unverified && lv.total > 0.1) {
-          html += '<div class="lp-alert">⚡ Registry had this one pending — the live scan now detects <b>' + fmtPct(lv.total) + "</b> Musk exposure. Stamp adjusted above.</div>";
+          html += '<div class="lp-alert">⚡ Registry had this one pending, the live scan now detects <b>' + fmtPct(lv.total) + "</b> Musk exposure. Stamp adjusted above.</div>";
           restampLive(f, lv);
         } else if (f.unverified && lv.total === 0) {
-          html += '<div class="lp-ok">✓ Live scan agrees: nothing visible in the top holdings as of today. This fund is on SPCX-watch — recheck after index rebalances.</div>';
+          html += '<div class="lp-ok">✓ Live scan agrees: nothing visible in the top holdings as of today. This fund is on SPCX-watch, recheck after index rebalances.</div>';
         } else if (reg > 0 && Math.abs(lv.total - reg) <= 0.6 && lv.total > 0) {
           html += '<div class="lp-ok">✓ Live scan (' + fmtPct(lv.total) + ") agrees with the registry (" + fmtPct(reg) + "). Stamp stands.</div>";
         }
@@ -863,7 +869,7 @@
       '<section class="cert"><div class="wrap">' +
       '<p class="kicker">Live inspection in progress</p>' +
       '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);">Scanning ' + esc(t) + '<span class="blink">…</span></h1>' +
-      '<p class="hero-sub" style="margin-top:16px;">Not in our verified registry — running a live lookup: classifying the ticker, pulling holdings, scanning for Musk enterprises.</p>' +
+      '<p class="hero-sub" style="margin-top:16px;">Not in our verified registry, running a live lookup: classifying the ticker, pulling holdings, scanning for Musk enterprises.</p>' +
       "</div></section>";
 
     LIVE.lookup(t).then(function (r) {
@@ -873,56 +879,44 @@
       var typeLabel = r.kind === "e" ? "ETF" : r.kind === "mutf" ? "Mutual fund" : "Stock";
       var f = {
         t: r.sym, n: r.name, type: typeLabel,
-        cat: "Live lookup — not yet in the verified registry",
+        cat: "Live lookup, not yet in the verified registry",
         live: true,
         tsla: lv.tsla, spacex: lv.spcx,
         liveClean: r.kind === "e" && r.scan && lv.total === 0,
         special: r.kind === "mutf" && !r.scan ? "limited" : (r.kind === "s" && !r.scan && lv.total === 0 ? undefined : undefined),
         note: r.kind === "e"
           ? (lv.total > 0
-            ? "Live top-25 holdings scan detected Musk positions (see panel below). Weights below the top-25 cutoff are invisible to this scan — treat the number as a floor, not a ceiling."
-            : "Live top-25 holdings scan found no Tesla or SpaceX. Small positions (under roughly 1%) can hide below the cutoff — check the issuer’s full holdings list to be certain.")
+            ? "Live top-25 holdings scan detected Musk positions (see panel below). Weights below the top-25 cutoff are invisible to this scan, treat the number as a floor, not a ceiling."
+            : "Live top-25 holdings scan found no Tesla or SpaceX. Small positions (under roughly 1%) can hide below the cutoff, check the issuer’s full holdings list to be certain.")
           : r.kind === "mutf"
             ? "Mutual fund holdings aren’t machine-readable in real time. Search “" + r.sym + " full holdings”, open the issuer’s page, and Ctrl-F for Tesla and SpaceX."
-            : "An individual company that is not Tesla and not SpaceX. Direct Musk equity: zero. (Business relationships with Musk companies aren’t equity — see methodology.)",
+            : "An individual company that is not Tesla and not SpaceX. Direct Musk equity: zero. (Business relationships with Musk companies aren’t equity, see methodology.)",
         alts: [], aliases: []
       };
       if (f.special === "limited") { f.tsla = 0; f.spacex = 0; }
       app.innerHTML = fundView(f);
       var v = verdict(f);
-      document.title = f.t + ": " + v.stamp + " (provisional) — Musk-Free Certified™";
+      document.title = f.t + ": " + v.stamp + " (provisional) · Musk-Free Certified™";
       window.scrollTo(0, 0);
       wireSearch(app);
       renderLivePanel(f, { quote: r.quote, overview: r.overview, scan: r.scan });
     });
   }
 
-  /* Homepage live tape (TSLA + SPCX) */
-  function liveTapeHTML() {
-    return '<div class="grid grid-2" id="live-tape" style="margin-top:26px;"></div>';
-  }
+  /* Live quotes inside the Musk-companies cards */
   function fillLiveTape() {
-    var el = document.getElementById("live-tape");
-    if (!el || typeof LIVE === "undefined" || !window.fetch) return;
-    var symbols = [
-      { t: "TSLA", label: "Tesla, Inc." },
-      { t: "SPCX", label: "SpaceX (incl. xAI, X, Grok)" },
-    ];
-    Promise.all(symbols.map(function (s) {
-      return Promise.all([LIVE.quote("s", s.t), LIVE.overview("s", s.t)]);
-    })).then(function (results) {
-      var html = "";
-      results.forEach(function (res, i) {
+    if (typeof LIVE === "undefined" || !window.fetch) return;
+    ["TSLA", "SPCX"].forEach(function (t) {
+      var el = document.getElementById("co-live-" + t);
+      if (!el) return;
+      Promise.all([LIVE.quote("s", t), LIVE.overview("s", t)]).then(function (res) {
         var q = LIVE.fmtQuoteLine(res[0]);
         var ov = res[1] || {};
         if (!q) return;
-        html += '<a class="card lt-card" href="#/f/' + symbols[i].t + '">' +
-          '<div class="lt-row"><span class="card-tick">' + symbols[i].t + '</span><span class="lp-dot"></span><span class="lt-live">LIVE</span></div>' +
-          '<div class="card-name">' + esc(symbols[i].label) + "</div>" +
-          '<div class="lt-price">' + q.price + ' <span class="' + (q.up ? "up" : "down") + '">' + q.chg + "</span></div>" +
-          '<div class="lt-sub">' + (ov.marketCap ? "mkt cap " + esc(ov.marketCap) : "") + (q.asof ? " · " + esc(q.asof) : "") + "</div></a>";
+        el.innerHTML = '<span class="lp-dot"></span><span class="lt-live">LIVE</span> ' +
+          '<span class="lt-price" style="font-size:22px;">' + q.price + ' <span class="' + (q.up ? "up" : "down") + '">' + q.chg + "</span></span>" +
+          '<span class="lt-sub">' + (ov.marketCap ? " · mkt cap " + esc(ov.marketCap) : "") + "</span>";
       });
-      if (html) el.innerHTML = html;
     });
   }
 
@@ -943,7 +937,7 @@
   function bigBoardHTML() {
     return (
       '<section class="section"><div class="wrap">' +
-      '<p class="kicker">Exhibit AA — The Big Board</p>' +
+      '<p class="kicker">Exhibit AA. The Big Board</p>' +
       '<h2 class="h-display" style="font-size:clamp(28px,4vw,44px);margin-bottom:10px;">The largest funds holding Musk companies</h2>' +
       '<p class="hero-sub" style="margin-top:8px;max-width:64ch;">Ranked by assets. Every one comes with the Bureau’s recommended clean substitute. Assets approximate; exposure verified where chips say so.</p>' +
       '<div class="bb-filters" role="tablist">' +
@@ -972,7 +966,7 @@
         "<td>" + rm.flag + " <a href='#/f/" + esc(f.t) + "'>" + esc(f.t) + "</a><div class='tr-funds'>" + esc(f.n) + "</div></td>" +
         "<td class='num'>" + fmtAumB(fundAumB(f)) + "</td>" +
         "<td class='num' style='color:var(--red)'>" + fmtPct(exposure(f)) + "</td>" +
-        "<td>" + (rec ? "<a href='#/f/" + esc(rec.f.t) + "'>" + esc(rec.f.t) + "</a> <span class='tr-funds' style='display:inline'>" + fmtPct(exposure(rec.f)) + " Musk" + (rec.fallback ? " · nearest clean lane" : "") + "</span>" : "—") + "</td></tr>";
+        "<td>" + (rec ? "<a href='#/f/" + esc(rec.f.t) + "'>" + esc(rec.f.t) + "</a> <span class='tr-funds' style='display:inline'>" + fmtPct(exposure(rec.f)) + " Musk" + (rec.fallback ? " · nearest clean lane" : "") + "</span>" : "-") + "</td></tr>";
     }).join("") || '<tr><td colspan="5">No qualifying funds in this region’s registry yet.</td></tr>';
   }
 
@@ -990,11 +984,11 @@
 
   /* SPCX inclusion tracker */
   function trackerHTML() {
-    var chip = { in: '<span class="tr-chip tr-in">IN — CONTAINS SPCX</span>', out: '<span class="tr-chip tr-out">OUT — SPCX-FREE</span>', pending: '<span class="tr-chip tr-pending">PENDING</span>' };
+    var chip = { in: '<span class="tr-chip tr-in">IN. CONTAINS SPCX</span>', out: '<span class="tr-chip tr-out">OUT. SPCX-FREE</span>', pending: '<span class="tr-chip tr-pending">PENDING</span>' };
     var rows = SPCX_TRACKER.map(function (r) {
       return "<tr><td><b>" + esc(r.index) + '</b><div class="tr-funds">' + esc(r.funds) + "</div></td><td>" + chip[r.status] + '<div class="tr-when">' + esc(r.when) + "</div></td><td>" + esc(r.note) + "</td></tr>";
     }).join("");
-    return '<table class="tbl"><caption>Exhibit D — The SPCX Inclusion Tracker: is SpaceX coming to YOUR index?</caption>' +
+    return '<table class="tbl"><caption>Exhibit D. The SPCX Inclusion Tracker: is SpaceX coming to YOUR index?</caption>' +
       "<thead><tr><th>Index family</th><th>Status</th><th>The situation</th></tr></thead><tbody>" + rows + "</tbody></table>";
   }
 
@@ -1037,7 +1031,7 @@
     });
     var marks = pts.map(function (p, i) {
       var x = s.x(i), y = s.y(p[1]);
-      var tip = esc(p[0]) + " · " + p[1] + (spec.unit || "%") + (p[2] ? " — " + esc(p[2]) : "");
+      var tip = esc(p[0]) + " · " + p[1] + (spec.unit || "%") + (p[2] ? ". " + esc(p[2]) : "");
       return '<circle cx="' + x + '" cy="' + y + '" r="3.5" fill="#C8102E"/>' +
         '<circle cx="' + x + '" cy="' + y + '" r="12" fill="transparent" class="ch-hit" data-tip="' + tip + '"/>';
     }).join("");
@@ -1088,7 +1082,7 @@
       '<section class="cert"><div class="wrap">' +
       '<p class="kicker">The Analytics Annex</p>' +
       '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);">The charts<span style="color:var(--red)">.</span></h1>' +
-      '<p class="hero-sub" style="margin-top:16px;">Exposure over time, the passive-flow machine at work, and where the Musk actually concentrates. Figures are curated estimates from index data and analyst flow projections — approximate by nature, honest by policy.</p>' +
+      '<p class="hero-sub" style="margin-top:16px;">Exposure over time, the passive-flow machine at work, and where the Musk actually concentrates. Figures are curated estimates from index data and analyst flow projections, approximate by nature, honest by policy.</p>' +
       '<div class="ch-grid">' +
       chartCard(ANALYTICS.tslaWeight, lineChartSVG(ANALYTICS.tslaWeight), "Exhibit F-1") +
       chartCard(ANALYTICS.spcxFlows, lineChartSVG(Object.assign({ unit: "B" }, ANALYTICS.spcxFlows), true), "Exhibit F-2") +
@@ -1120,9 +1114,9 @@
   function watchView() {
     return (
       '<section class="cert"><div class="wrap">' +
-      '<p class="kicker">SPCX Watch — daily surveillance</p>' +
+      '<p class="kicker">SPCX Watch, daily surveillance</p>' +
       '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);">The exposure changelog<span style="color:var(--red)">.</span></h1>' +
-      '<p class="hero-sub" style="margin-top:16px;">Every night we re-scan the visible holdings of every fund in the registry and log what changed — SpaceX arriving in a fund, exiting one, or Musk exposure shifting by half a point or more. Subscribe to the <a href="feed.xml">RSS feed</a> to know the moment SPCX lands in yours.</p>' +
+      '<p class="hero-sub" style="margin-top:16px;">Every night we re-scan the visible holdings of every fund in the registry and log what changed. SpaceX arriving in a fund, exiting one, or Musk exposure shifting by half a point or more. Subscribe to the <a href="feed.xml">RSS feed</a> to know the moment SPCX lands in yours.</p>' +
       '<div id="watch-log" style="margin-top:36px;"><p class="lp-clean">Loading the log…</p></div>' +
       '<div style="margin-top:44px;overflow-x:auto;">' + trackerHTML() + "</div>" +
       "</div></section>"
@@ -1135,7 +1129,7 @@
     fetch("changelog.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (log) {
       if (!log) { el.innerHTML = '<p class="lp-clean">No log available (are you running locally without the pipeline output?).</p>'; return; }
       if (!log.length) {
-        el.innerHTML = '<div class="nf-box"><div class="prose"><p><b>No exposure changes on file yet.</b> The nightly scanner started recently — events appear here the first time a fund’s visible Musk holdings move. Quiet log, calm markets, watchful bureau.</p></div></div>';
+        el.innerHTML = '<div class="nf-box"><div class="prose"><p><b>No exposure changes on file yet.</b> The nightly scanner started recently, events appear here the first time a fund’s visible Musk holdings move. Quiet log, calm markets, watchful bureau.</p></div></div>';
         return;
       }
       var rows = log.slice(0, 100).map(function (e) {
@@ -1144,9 +1138,31 @@
           : '<span class="tr-chip tr-pending">SHIFT</span>';
         return "<tr><td class='num'>" + esc(e.date) + "</td><td><a href='#/f/" + esc(e.t) + "'>" + esc(e.t) + "</a></td><td>" + chip + "</td><td>" + esc(e.text) + "</td></tr>";
       }).join("");
-      el.innerHTML = '<table class="tbl"><caption>Exhibit E — Logged exposure events (newest first)</caption>' +
+      el.innerHTML = '<table class="tbl"><caption>Exhibit E. Logged exposure events (newest first)</caption>' +
         "<thead><tr><th>Date</th><th>Ticker</th><th>Event</th><th>Detail</th></tr></thead><tbody>" + rows + "</tbody></table>";
     }).catch(function () {});
+  }
+
+  function methodologyView() {
+    return (
+      '<section class="cert"><div class="wrap">' +
+      '<p class="kicker">Fine print, up front</p>' +
+      '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);margin-bottom:26px;">Methodology<span style="color:var(--red)">.</span></h1>' +
+      methodologyHTML() +
+      '<div style="margin-top:44px;">' + searchboxHTML("meth-search") + "</div>" +
+      "</div></section>"
+    );
+  }
+
+  function faqView() {
+    return (
+      '<section class="cert"><div class="wrap">' +
+      '<p class="kicker">Frequently asked</p>' +
+      '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);margin-bottom:26px;">Questions<span style="color:var(--red)">.</span></h1>' +
+      faqHTML() +
+      '<div style="margin-top:44px;">' + searchboxHTML("faq-search") + "</div>" +
+      "</div></section>"
+    );
   }
 
   function notFoundView(q) {
@@ -1155,7 +1171,7 @@
       '<p class="kicker">Inspection failed</p>' +
       '<h1 class="h-display" style="font-size:clamp(34px,6vw,64px);margin-bottom:24px;">Not on file<span style="color:var(--red)">.</span></h1>' +
       '<div class="nf-box"><div class="prose">' +
-      "<p>We couldn’t find <b>“" + esc(q) + "”</b> in the registry. We cover " + FUNDS.length + " of the most widely held funds and stocks — but not everything, yet.</p>" +
+      "<p>We couldn’t find <b>“" + esc(q) + "”</b> in the registry. We cover " + FUNDS.length + " of the most widely held funds and stocks, but not everything, yet.</p>" +
       "<p><b>DIY inspection, 60 seconds:</b> search “<i>" + esc(q) + " full holdings</i>” and open the fund issuer’s own page. Then Ctrl-F for <b>Tesla</b>, <b>SpaceX</b>, and <b>xAI</b>. If it’s a US large-cap index fund, assume roughly 1.5–2% Tesla until proven otherwise.</p>" +
       '<p class="serif">Rule of thumb: if it tracks “the market,” the market includes Elon.</p>' +
       "</div></div>" +
@@ -1266,7 +1282,7 @@
   function route() {
     var h = location.hash || "#/";
     var m;
-    document.title = "Musk-Free Certified™ — Is there Elon in your index fund?";
+    document.title = "Musk-Free Certified™ · Is there Elon in your index fund?";
 
     if ((m = h.match(/^#\/f\/([^\/]+)/))) {
       var t = decodeURIComponent(m[1]).toUpperCase();
@@ -1274,7 +1290,7 @@
       if (f) {
         app.innerHTML = fundView(f);
         var v = verdict(f);
-        document.title = f.t + ": " + v.stamp + " — Musk-Free Certified™";
+        document.title = f.t + ": " + v.stamp + " · Musk-Free Certified™";
         enhanceFundLive(f);
       } else if (typeof LIVE !== "undefined" && window.fetch && /^[A-Z0-9.\-]{1,10}$/.test(t)) {
         liveFundView(t);
@@ -1287,35 +1303,32 @@
       window.scrollTo(0, 0);
     } else if (h === "#/portfolio") {
       app.innerHTML = portfolioView();
-      document.title = "Full Portfolio Audit — Musk-Free Certified™";
+      document.title = "Full Portfolio Audit. Musk-Free Certified™";
       window.scrollTo(0, 0);
       wirePortfolio(app);
     } else if (h === "#/watch") {
       app.innerHTML = watchView();
-      document.title = "SPCX Watch — Musk-Free Certified™";
+      document.title = "SPCX Watch. Musk-Free Certified™";
       window.scrollTo(0, 0);
       fillWatchLog();
     } else if (h === "#/analytics") {
       app.innerHTML = analyticsView();
-      document.title = "The Analytics Annex — Musk-Free Certified™";
+      document.title = "The Analytics Annex. Musk-Free Certified™";
       window.scrollTo(0, 0);
       wireChartTips(app);
-    } else if (h === "#/index" || h === "#/methodology" || h === "#/faq") {
+    } else if (h === "#/methodology") {
+      app.innerHTML = methodologyView();
+      document.title = "Methodology · Musk-Free Certified™";
+      window.scrollTo(0, 0);
+    } else if (h === "#/faq") {
+      app.innerHTML = faqView();
+      document.title = "FAQ · Musk-Free Certified™";
+      window.scrollTo(0, 0);
+    } else if (h === "#/index") {
       app.innerHTML = homeView();
-      var target = { "#/index": "musk-index", "#/methodology": null, "#/faq": null }[h];
-      // scroll to the matching section by heading text
-      var anchors = { "#/index": "musk-index" };
       requestAnimationFrame(function () {
-        if (h === "#/index") {
-          var el = document.getElementById("musk-index");
-          if (el) el.scrollIntoView();
-        } else {
-          var sections = app.querySelectorAll(".section .kicker");
-          var want = h === "#/methodology" ? "Fine print" : "Frequently asked";
-          for (var i = 0; i < sections.length; i++) {
-            if (sections[i].textContent.indexOf(want) !== -1) { sections[i].closest(".section").scrollIntoView(); break; }
-          }
-        }
+        var el = document.getElementById("musk-index");
+        if (el) el.scrollIntoView();
       });
     } else {
       app.innerHTML = homeView();
@@ -1339,8 +1352,12 @@
       var f = byTicker[t];
       var rec = overlay.funds[t];
       if (!f || f.special) return;
+      /* Leveraged/inverse products: holdings files list swap collateral, not
+         notional exposure. Registry keeps the true multiple; no scan override,
+         no misleading "verified" chip. */
+      if (Math.abs(f.tsla || 0) >= 100 || /leveraged|inverse/i.test(f.cat || "")) return;
       if (rec.src === "nport") {
-        /* N-PORT is the complete portfolio — zeros are affirmative too,
+        /* N-PORT is the complete portfolio, zeros are affirmative too,
            EXCEPT for SPCX in filings dated before its index-inclusion wave
            (June 2026): those filings couldn't have held it yet. */
         f.tsla = rec.tsla;
@@ -1365,7 +1382,7 @@
       f.dailyVerified = { date: m.dailyVerified.date, src: "mirror", via: m.t };
     });
     /* Issuer-direct holdings files (CA/EU iShares): complete daily portfolios
-       with fund-of-funds look-through — beats mirrors and statics. */
+       with fund-of-funds look-through, beats mirrors and statics. */
     if (intl && intl.funds) {
       var iDate = (intl.generated || "").slice(0, 10);
       Object.keys(intl.funds).forEach(function (t) {

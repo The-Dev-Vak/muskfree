@@ -69,10 +69,10 @@ const escXml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<":
 function stubHTML(f) {
   const v = verdict(f);
   const x = exposure(f);
-  const pct = f.special ? "" : ` — ${fmtPct(x)} Musk exposure`;
-  const title = `${f.t}: ${v.stamp} — Musk-Free Certified™`;
+  const pct = f.special ? "" : `. ${fmtPct(x)} Musk exposure`;
+  const title = `${f.t}: ${v.stamp} · Musk-Free Certified™`;
   const desc = f.special
-    ? `${f.n}: ${v.stamp}. Check any ticker for Elon Musk exposure — free, 2 seconds, official-looking stamp included.`
+    ? `${f.n}: ${v.stamp}. Check any ticker for Elon Musk exposure, free, 2 seconds, official-looking stamp included.`
     : `${f.n}${pct}. ${x > 0 ? `Invest $10,000 and ~$${Math.abs(Math.round(x * 100)).toLocaleString("en-US")} of it is Musk enterprises.` : "No Tesla, no SpaceX, no Musk. Certified."} Check any ticker free.`;
   const og = f.autoGen ? `${SITE}/og/tier-${tierSlug(f)}.png` : `${SITE}/og/${encodeURIComponent(f.t)}.png`;
   const page = `${SITE}/f/${encodeURIComponent(f.t)}.html`;
@@ -106,7 +106,7 @@ function stubHTML(f) {
 }
 
 /* ---- OG card SVG (square canvas for the macOS qlmanage trick;
-        design band is 1200x630 centered — crop after raster) ---- */
+        design band is 1200x630 centered, crop after raster) ---- */
 function ogSVG(f) {
   const v = verdict(f);
   const x = exposure(f);

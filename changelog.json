@@ -1,1 +1,50 @@
-[]
+[
+ {
+  "date": "2026-07-14",
+  "t": "QQQ",
+  "type": "spcx-added",
+  "from": 0,
+  "to": 1.21,
+  "text": "QQQ (Invesco QQQ Trust (Nasdaq-100)) now shows SpaceX at 1.21% — SPCX has entered this fund's visible holdings."
+ },
+ {
+  "date": "2026-07-14",
+  "t": "QQQM",
+  "type": "spcx-added",
+  "from": 0,
+  "to": 1.25,
+  "text": "QQQM (Invesco Nasdaq-100 ETF) now shows SpaceX at 1.25% — SPCX has entered this fund's visible holdings."
+ },
+ {
+  "date": "2026-07-14",
+  "t": "ARKQ",
+  "type": "shift",
+  "from": 16.17,
+  "to": 16.84,
+  "text": "ARKQ (ARK Autonomous Tech & Robotics ETF) Musk exposure moved 16.2% → 16.8%."
+ },
+ {
+  "date": "2026-07-14",
+  "t": "XLY",
+  "type": "shift",
+  "from": 18.37,
+  "to": 19.05,
+  "text": "XLY (Consumer Discretionary Select Sector SPDR) Musk exposure moved 18.4% → 19.1%."
+ },
+ {
+  "date": "2026-07-14",
+  "t": "TSLS",
+  "type": "shift",
+  "from": 6.17,
+  "to": 6.86,
+  "text": "TSLS (Direxion Daily TSLA Bear 1X Shares) Musk exposure moved 6.2% → 6.9%."
+ },
+ {
+  "date": "2026-07-14",
+  "t": "XOVR",
+  "type": "shift",
+  "from": 16.61,
+  "to": 15.97,
+  "text": "XOVR (ERShares Private-Public Crossover ETF) Musk exposure moved 16.6% → 16.0%."
+ }
+]

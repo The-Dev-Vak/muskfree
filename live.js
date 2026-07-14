@@ -11,6 +11,15 @@
      /api/symbol/e/{SYM}/holdings        top-25 holdings (ETFs)
      /api/search?q=                      classify unknown tickers
    kind: s = stock, e = ETF, mutf = mutual fund
+
+   NOTE (July 2026): stockanalysis.com removed the /api/symbol/...
+   family; overview and holdings now 404 → null. The SSR payload the
+   nightly pipeline falls back to (__data.json) is not CORS-enabled,
+   so the browser can't use it. Callers must treat scan=null as
+   "scan unavailable", never as "clean" — data.live.json (refreshed
+   nightly server-side) carries the verified numbers instead. Quote
+   and search remain live. The dead endpoints are still attempted so
+   this layer self-heals if they ever return.
    ============================================================ */
 
 var LIVE = (function () {

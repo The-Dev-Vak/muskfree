@@ -883,9 +883,11 @@
         live: true,
         tsla: lv.tsla, spacex: lv.spcx,
         liveClean: r.kind === "e" && r.scan && lv.total === 0,
-        special: r.kind === "mutf" && !r.scan ? "limited" : (r.kind === "s" && !r.scan && lv.total === 0 ? undefined : undefined),
+        special: !r.scan && (r.kind === "e" || r.kind === "mutf") ? "limited" : undefined,
         note: r.kind === "e"
-          ? (lv.total > 0
+          ? (!r.scan
+            ? "The live holdings feed is unavailable right now, so this fund can’t be machine-scanned. Open the issuer’s full holdings list and check for Tesla and SpaceX."
+            : lv.total > 0
             ? "Live top-25 holdings scan detected Musk positions (see panel below). Weights below the top-25 cutoff are invisible to this scan, treat the number as a floor, not a ceiling."
             : "Live top-25 holdings scan found no Tesla or SpaceX. Small positions (under roughly 1%) can hide below the cutoff, check the issuer’s full holdings list to be certain.")
           : r.kind === "mutf"

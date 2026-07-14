@@ -13,6 +13,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { getHoldings } from "./lib-holdings.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const TOP = parseInt(process.env.TOP || "700", 10);
@@ -46,15 +47,6 @@ async function fetchUniverse() {
   return rows.filter((x) => x && x.s && typeof x.aum === "number");
 }
 
-async function getJSON(p) {
-  try {
-    const r = await fetch("https://api.stockanalysis.com/api" + p, UA);
-    if (!r.ok) return null;
-    const j = await r.json();
-    return j && j.status === 200 ? j.data : null;
-  } catch { return null; }
-}
-
 function muskScan(rows) {
   let tsla = 0, spcx = 0, coverage = 0;
   for (const h of rows || []) {
@@ -80,7 +72,7 @@ const gen = [];
 let scanned = 0, noHold = 0;
 for (const r of targets) {
   const t = r.s.toUpperCase();
-  const hold = await getJSON(`/symbol/e/${t}/holdings`);
+  const hold = await getHoldings(t);
   await sleep(110);
   const entry = {
     t: t,

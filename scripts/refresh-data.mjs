@@ -13,10 +13,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { getHoldings } from "./lib-holdings.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const API = "https://api.stockanalysis.com/api";
-const UA = { headers: { "User-Agent": "muskfree-certified/1.0 (nightly registry verification)" } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const dataSrc = fs.readFileSync(path.join(root, "data.js"), "utf8");
@@ -29,15 +28,6 @@ try {
 } catch {}
 const curated = new Set(FUNDS.map((f) => f.t));
 const ALLFUNDS = FUNDS.concat(GEN.filter((g) => !curated.has(g.t)).map((g) => ({ t: g.t, n: g.n, type: "ETF", cat: g.cat })));
-
-async function getJSON(p) {
-  try {
-    const r = await fetch(API + p, UA);
-    if (!r.ok) return null;
-    const j = await r.json();
-    return j && j.status === 200 ? j.data : null;
-  } catch { return null; }
-}
 
 function muskScan(rows) {
   let tsla = 0, spcx = 0, coverage = 0;
@@ -58,12 +48,12 @@ console.log(`scanning ${scannable.length} funds…`);
 const out = { generated: new Date().toISOString(), source: "stockanalysis.com top-25 holdings scan", funds: {} };
 let ok = 0, fail = 0;
 for (const f of scannable) {
-  const [hold, ov] = await Promise.all([getJSON(`/symbol/e/${f.t}/holdings`), getJSON(`/symbol/e/${f.t}/overview`)]);
+  const hold = await getHoldings(f.t);
   if (!hold || !hold.holdings) { fail++; await sleep(120); continue; }
   const scan = muskScan(hold.holdings);
   out.funds[f.t] = {
     tsla: scan.tsla, spcx: scan.spcx, cov: scan.coverage,
-    aum: ov?.aum || null, er: ov?.expenseRatio || null,
+    aum: hold.aum, er: null,
   };
   ok++;
   await sleep(120);

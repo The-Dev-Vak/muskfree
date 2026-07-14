@@ -3,7 +3,48 @@
  <channel>
   <title>SPCX Watch — Musk-Free Certified</title>
   <link>https://muskfree.example</link>
-  <description>Daily-scanned changes in Tesla/SpaceX exposure across 142 funds. Know the moment SPCX lands in yours.</description>
-
+  <description>Daily-scanned changes in Tesla/SpaceX exposure across 842 funds. Know the moment SPCX lands in yours.</description>
+  <item>
+   <title>QQQ: SpaceX detected</title>
+   <description>QQQ (Invesco QQQ Trust (Nasdaq-100)) now shows SpaceX at 1.21% — SPCX has entered this fund's visible holdings.</description>
+   <link>https://muskfree.example/f/QQQ.html</link>
+   <guid isPermaLink="false">2026-07-14-QQQ-spcx-added</guid>
+   <pubDate>Tue, 14 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
+   <title>QQQM: SpaceX detected</title>
+   <description>QQQM (Invesco Nasdaq-100 ETF) now shows SpaceX at 1.25% — SPCX has entered this fund's visible holdings.</description>
+   <link>https://muskfree.example/f/QQQM.html</link>
+   <guid isPermaLink="false">2026-07-14-QQQM-spcx-added</guid>
+   <pubDate>Tue, 14 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
+   <title>ARKQ: exposure shift</title>
+   <description>ARKQ (ARK Autonomous Tech &amp; Robotics ETF) Musk exposure moved 16.2% → 16.8%.</description>
+   <link>https://muskfree.example/f/ARKQ.html</link>
+   <guid isPermaLink="false">2026-07-14-ARKQ-shift</guid>
+   <pubDate>Tue, 14 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
+   <title>XLY: exposure shift</title>
+   <description>XLY (Consumer Discretionary Select Sector SPDR) Musk exposure moved 18.4% → 19.1%.</description>
+   <link>https://muskfree.example/f/XLY.html</link>
+   <guid isPermaLink="false">2026-07-14-XLY-shift</guid>
+   <pubDate>Tue, 14 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
+   <title>TSLS: exposure shift</title>
+   <description>TSLS (Direxion Daily TSLA Bear 1X Shares) Musk exposure moved 6.2% → 6.9%.</description>
+   <link>https://muskfree.example/f/TSLS.html</link>
+   <guid isPermaLink="false">2026-07-14-TSLS-shift</guid>
+   <pubDate>Tue, 14 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
+   <title>XOVR: exposure shift</title>
+   <description>XOVR (ERShares Private-Public Crossover ETF) Musk exposure moved 16.6% → 16.0%.</description>
+   <link>https://muskfree.example/f/XOVR.html</link>
+   <guid isPermaLink="false">2026-07-14-XOVR-shift</guid>
+   <pubDate>Tue, 14 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
  </channel>
 </rss>

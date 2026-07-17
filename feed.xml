@@ -5,6 +5,20 @@
   <link>https://muskfree.example</link>
   <description>Daily-scanned changes in Tesla/SpaceX exposure across 843 funds. Know the moment SPCX lands in yours.</description>
   <item>
+   <title>XOVR: exposure shift</title>
+   <description>XOVR (ERShares Private-Public Crossover ETF) Musk exposure moved 16.0% → 14.9%.</description>
+   <link>https://muskfree.example/f/XOVR.html</link>
+   <guid isPermaLink="false">2026-07-17-XOVR-shift</guid>
+   <pubDate>Fri, 17 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
+   <title>VOX: SpaceX detected</title>
+   <description>VOX (Vanguard Communication Services ETF) now shows SpaceX at 2.37% — SPCX has entered this fund's visible holdings.</description>
+   <link>https://muskfree.example/f/VOX.html</link>
+   <guid isPermaLink="false">2026-07-17-VOX-spcx-added</guid>
+   <pubDate>Fri, 17 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
    <title>QQQ: SpaceX detected</title>
    <description>QQQ (Invesco QQQ Trust (Nasdaq-100)) now shows SpaceX at 1.21% — SPCX has entered this fund's visible holdings.</description>
    <link>https://muskfree.example/f/QQQ.html</link>

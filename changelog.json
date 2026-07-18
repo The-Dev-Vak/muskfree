@@ -1,5 +1,21 @@
 [
  {
+  "date": "2026-07-18",
+  "t": "TSLL",
+  "type": "shift",
+  "from": 17.4,
+  "to": 6.25,
+  "text": "TSLL (Direxion Daily TSLA Bull 2X Shares) Musk exposure moved 17.4% → 6.3%."
+ },
+ {
+  "date": "2026-07-18",
+  "t": "LCAP",
+  "type": "shift",
+  "from": 0,
+  "to": 1.46,
+  "text": "LCAP (Principal Capital Appreciation Select ETF) Musk exposure moved 0.0% → 1.5%."
+ },
+ {
   "date": "2026-07-17",
   "t": "XOVR",
   "type": "shift",

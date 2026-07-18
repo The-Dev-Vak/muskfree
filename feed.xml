@@ -5,6 +5,20 @@
   <link>https://muskfree.example</link>
   <description>Daily-scanned changes in Tesla/SpaceX exposure across 843 funds. Know the moment SPCX lands in yours.</description>
   <item>
+   <title>TSLL: exposure shift</title>
+   <description>TSLL (Direxion Daily TSLA Bull 2X Shares) Musk exposure moved 17.4% → 6.3%.</description>
+   <link>https://muskfree.example/f/TSLL.html</link>
+   <guid isPermaLink="false">2026-07-18-TSLL-shift</guid>
+   <pubDate>Sat, 18 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
+   <title>LCAP: exposure shift</title>
+   <description>LCAP (Principal Capital Appreciation Select ETF) Musk exposure moved 0.0% → 1.5%.</description>
+   <link>https://muskfree.example/f/LCAP.html</link>
+   <guid isPermaLink="false">2026-07-18-LCAP-shift</guid>
+   <pubDate>Sat, 18 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
    <title>XOVR: exposure shift</title>
    <description>XOVR (ERShares Private-Public Crossover ETF) Musk exposure moved 16.0% → 14.9%.</description>
    <link>https://muskfree.example/f/XOVR.html</link>

@@ -1,5 +1,29 @@
 [
  {
+  "date": "2026-07-19",
+  "t": "XLY",
+  "type": "shift",
+  "from": 18.62,
+  "to": 18.06,
+  "text": "XLY (Consumer Discretionary Select Sector SPDR) Musk exposure moved 18.6% → 18.1%."
+ },
+ {
+  "date": "2026-07-19",
+  "t": "VCIT",
+  "type": "spcx-added",
+  "from": 0,
+  "to": 0.27,
+  "text": "VCIT (Vanguard Intermediate-Term Corporate Bond ETF) now shows SpaceX at 0.27% — SPCX has entered this fund's visible holdings."
+ },
+ {
+  "date": "2026-07-19",
+  "t": "LCAP",
+  "type": "shift",
+  "from": 1.46,
+  "to": 0,
+  "text": "LCAP (Principal Capital Appreciation Select ETF) Musk exposure moved 1.5% → 0.0%."
+ },
+ {
   "date": "2026-07-18",
   "t": "TSLL",
   "type": "shift",

@@ -5,6 +5,27 @@
   <link>https://muskfree.example</link>
   <description>Daily-scanned changes in Tesla/SpaceX exposure across 843 funds. Know the moment SPCX lands in yours.</description>
   <item>
+   <title>XLY: exposure shift</title>
+   <description>XLY (Consumer Discretionary Select Sector SPDR) Musk exposure moved 18.6% → 18.1%.</description>
+   <link>https://muskfree.example/f/XLY.html</link>
+   <guid isPermaLink="false">2026-07-19-XLY-shift</guid>
+   <pubDate>Sun, 19 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
+   <title>VCIT: SpaceX detected</title>
+   <description>VCIT (Vanguard Intermediate-Term Corporate Bond ETF) now shows SpaceX at 0.27% — SPCX has entered this fund's visible holdings.</description>
+   <link>https://muskfree.example/f/VCIT.html</link>
+   <guid isPermaLink="false">2026-07-19-VCIT-spcx-added</guid>
+   <pubDate>Sun, 19 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
+   <title>LCAP: exposure shift</title>
+   <description>LCAP (Principal Capital Appreciation Select ETF) Musk exposure moved 1.5% → 0.0%.</description>
+   <link>https://muskfree.example/f/LCAP.html</link>
+   <guid isPermaLink="false">2026-07-19-LCAP-shift</guid>
+   <pubDate>Sun, 19 Jul 2026 12:00:00 GMT</pubDate>
+  </item>
+  <item>
    <title>TSLL: exposure shift</title>
    <description>TSLL (Direxion Daily TSLA Bull 2X Shares) Musk exposure moved 17.4% → 6.3%.</description>
    <link>https://muskfree.example/f/TSLL.html</link>

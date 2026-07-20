@@ -1,5 +1,21 @@
 [
  {
+  "date": "2026-07-20",
+  "t": "TSLS",
+  "type": "shift",
+  "from": 6.86,
+  "to": 5.76,
+  "text": "TSLS (Direxion Daily TSLA Bear 1X Shares) Musk exposure moved 6.9% → 5.8%."
+ },
+ {
+  "date": "2026-07-20",
+  "t": "EPS",
+  "type": "shift",
+  "from": 0,
+  "to": 0.63,
+  "text": "EPS (WisdomTree U.S. LargeCap Fund) Musk exposure moved 0.0% → 0.6%."
+ },
+ {
   "date": "2026-07-19",
   "t": "XLY",
   "type": "shift",
